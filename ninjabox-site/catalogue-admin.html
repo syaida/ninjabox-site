@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NinjaBox - Catalogue Data Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .category-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ff6b35;
+        }
+
+        .category-header h2 {
+            color: #1a1a1a;
+            font-size: 1.5rem;
+        }
+
+        .add-row-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .add-row-btn:hover {
+            background: #ff8c42;
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        thead {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .save-btn, .copy-btn, .preview-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .copy-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+        .preview-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .preview-btn:hover {
+            background: #5a6268;
+        }
+
+        .output-area {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .output-area.show {
+            display: block;
+        }
+
+        .output-area h3 {
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .output-area pre {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border: 1px solid #dee2e6;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .badge-select {
+            padding: 8px;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .instructions p {
+            color: #856404;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 NinjaBox Catalogue Data Manager</h1>
+        <p class="subtitle">Easy way to manage your product catalogue data</p>
+
+        <div class="instructions">
+            <h4>📝 How to Use:</h4>
+            <p>
+                1. Fill in your product details in the tables below<br>
+                2. Click "Add Row" to add more sizes<br>
+                3. Click "💾 Save Data" to store your changes<br>
+                4. Click "📋 Copy HTML Code" and paste it into your index.html file
+            </p>
+        </div>
+
+        <!-- PIZZA BOX -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>🍕 Pizza Box</h2>
+                <button class="add-row-btn" onclick="addRow('pizza')">+ Add Row</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="pizza-table">
+                    <thead>
+                        <tr>
+                            <th>Size Name</th>
+                            <th>Dimensions</th>
+                            <th>Material</th>
+                            <th>Badge</th>
+                            <th>Highlight</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" value="Small (10&quot;)" placeholder="e.g., Small (10&quot;)"></td>
+                            <td><input type="text" value='10" x 10" x 2"' placeholder="e.g., 10&quot; x 10&quot; x 2&quot;"></td>
+                            <td><input type="text" value="E-Flute Corrugated" placeholder="e.g., E-Flute Corrugated"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Medium (12&quot;)" placeholder="e.g., Medium (12&quot;)"></td>
+                            <td><input type="text" value='12" x 12" x 2"' placeholder="e.g., 12&quot; x 12&quot; x 2&quot;"></td>
+                            <td><input type="text" value="E-Flute Corrugated" placeholder="e.g., E-Flute Corrugated"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller" selected>Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check" checked></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Large (14&quot;)" placeholder="e.g., Large (14&quot;)"></td>
+                            <td><input type="text" value='14" x 14" x 2"' placeholder="e.g., 14&quot; x 14&quot; x 2&quot;"></td>
+                            <td><input type="text" value="E-Flute Corrugated" placeholder="e.g., E-Flute Corrugated"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MAILER BOX -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>📦 Mailer Box</h2>
+                <button class="add-row-btn" onclick="addRow('mailer')">+ Add Row</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="mailer-table">
+                    <thead>
+                        <tr>
+                            <th>Size Name</th>
+                            <th>Dimensions</th>
+                            <th>Material</th>
+                            <th>Badge</th>
+                            <th>Highlight</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" value="Small" placeholder="e.g., Small"></td>
+                            <td><input type="text" value="15cm x 10cm x 8cm" placeholder="e.g., 15cm x 10cm x 8cm"></td>
+                            <td><input type="text" value="B-Flute Corrugated" placeholder="e.g., B-Flute Corrugated"></td>
+                            <td><input type="text" value="300gsm" placeholder="e.g., 300gsm"></td>
+                            <td><input type="text" value="300 units" placeholder="e.g., 300 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Medium" placeholder="e.g., Medium"></td>
+                            <td><input type="text" value="25cm x 20cm x 10cm" placeholder="e.g., 25cm x 20cm x 10cm"></td>
+                            <td><input type="text" value="B-Flute Corrugated" placeholder="e.g., B-Flute Corrugated"></td>
+                            <td><input type="text" value="350gsm" placeholder="e.g., 350gsm"></td>
+                            <td><input type="text" value="300 units" placeholder="e.g., 300 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular" selected>Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check" checked></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Large" placeholder="e.g., Large"></td>
+                            <td><input type="text" value="35cm x 25cm x 15cm" placeholder="e.g., 35cm x 25cm x 15cm"></td>
+                            <td><input type="text" value="B-Flute Corrugated" placeholder="e.g., B-Flute Corrugated"></td>
+                            <td><input type="text" value="400gsm" placeholder="e.g., 400gsm"></td>
+                            <td><input type="text" value="300 units" placeholder="e.g., 300 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RSC BOX -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>📋 RSC Box</h2>
+                <button class="add-row-btn" onclick="addRow('rsc')">+ Add Row</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="rsc-table">
+                    <thead>
+                        <tr>
+                            <th>Size Name</th>
+                            <th>Dimensions</th>
+                            <th>Material</th>
+                            <th>Badge</th>
+                            <th>Highlight</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" value="Small" placeholder="e.g., Small"></td>
+                            <td><input type="text" value="30cm x 20cm x 20cm" placeholder="e.g., 30cm x 20cm x 20cm"></td>
+                            <td><input type="text" value="Single Wall Corrugated" placeholder="e.g., Single Wall"></td>
+                            <td><input type="text" value="200gsm" placeholder="e.g., 200gsm"></td>
+                            <td><input type="text" value="200 units" placeholder="e.g., 200 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Medium" placeholder="e.g., Medium"></td>
+                            <td><input type="text" value="45cm x 35cm x 30cm" placeholder="e.g., 45cm x 35cm x 30cm"></td>
+                            <td><input type="text" value="Single Wall Corrugated" placeholder="e.g., Single Wall"></td>
+                            <td><input type="text" value="250gsm" placeholder="e.g., 250gsm"></td>
+                            <td><input type="text" value="200 units" placeholder="e.g., 200 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value" selected>Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check" checked></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Large" placeholder="e.g., Large"></td>
+                            <td><input type="text" value="60cm x 40cm x 40cm" placeholder="e.g., 60cm x 40cm x 40cm"></td>
+                            <td><input type="text" value="Double Wall Corrugated" placeholder="e.g., Double Wall"></td>
+                            <td><input type="text" value="300gsm" placeholder="e.g., 300gsm"></td>
+                            <td><input type="text" value="200 units" placeholder="e.g., 200 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DOCUMENT BOX -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>📄 Document Box</h2>
+                <button class="add-row-btn" onclick="addRow('document')">+ Add Row</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="document-table">
+                    <thead>
+                        <tr>
+                            <th>Type Name</th>
+                            <th>Dimensions</th>
+                            <th>Material</th>
+                            <th>Weight</th>
+                            <th>MOQ</th>
+                            <th>Badge</th>
+                            <th>Highlight</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" value="Standard" placeholder="e.g., Standard"></td>
+                            <td><input type="text" value="35cm x 25cm x 30cm" placeholder="e.g., 35cm x 25cm x 30cm"></td>
+                            <td><input type="text" value="Single Wall Corrugated" placeholder="e.g., Single Wall"></td>
+                            <td><input type="text" value="250gsm" placeholder="e.g., 250gsm"></td>
+                            <td><input type="text" value="100 units" placeholder="e.g., 100 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Archive" placeholder="e.g., Archive"></td>
+                            <td><input type="text" value="40cm x 30cm x 35cm" placeholder="e.g., 40cm x 30cm x 35cm"></td>
+                            <td><input type="text" value="Double Wall Corrugated" placeholder="e.g., Double Wall"></td>
+                            <td><input type="text" value="350gsm" placeholder="e.g., 350gsm"></td>
+                            <td><input type="text" value="100 units" placeholder="e.g., 100 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium" selected>Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check" checked></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Legal" placeholder="e.g., Legal"></td>
+                            <td><input type="text" value="42cm x 28cm x 32cm" placeholder="e.g., 42cm x 28cm x 32cm"></td>
+                            <td><input type="text" value="Single Wall Corrugated" placeholder="e.g., Single Wall"></td>
+                            <td><input type="text" value="300gsm" placeholder="e.g., 300gsm"></td>
+                            <td><input type="text" value="100 units" placeholder="e.g., 100 units"></td>
+                            <td>
+                                <select class="badge-select">
+                                    <option value="">No Badge</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="New!">New!</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Best Value">Best Value</option>
+                                </select>
+                            </td>
+                            <td><input type="checkbox" class="highlight-check"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+            <button class="save-btn" onclick="saveData()">💾 Save Data</button>
+            <button class="copy-btn" onclick="generateHTML()">📋 Copy HTML Code</button>
+            <button class="preview-btn" onclick="previewData()">👁️ Preview Data</button>
+        </div>
+
+        <!-- OUTPUT AREA -->
+        <div class="output-area" id="outputArea">
+            <h3>Generated HTML Code</h3>
+            <p style="margin-bottom: 10px; color: #666;">Copy this code and paste it into your index.html file to replace the table data:</p>
+            <pre id="htmlOutput"></pre>
+        </div>
+
+        <!-- NOTIFICATION -->
+        <div class="notification" id="notification">✅ Data saved successfully!</div>
+    </div>
+
+    <script>
+        // Load saved data on page load
+        window.onload = function() {
+            loadData();
+        };
+
+        // Add new row to table
+        function addRow(category) {
+            const table = document.getElementById(category + '-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Size name"></td>
+                <td><input type="text" placeholder="Dimensions"></td>
+                <td><input type="text" placeholder="Material"></td>
+                <td>
+                    <select class="badge-select">
+                        <option value="">No Badge</option>
+                        <option value="Best Seller">Best Seller</option>
+                        <option value="Popular">Popular</option>
+                        <option value="New!">New!</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Best Value">Best Value</option>
+                    </select>
+                </td>
+                <td><input type="checkbox" class="highlight-check"></td>
+                <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+            `;
+        }
+
+        // Delete row
+        function deleteRow(btn) {
+            if (confirm('Are you sure you want to delete this row?')) {
+                const row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            const data = {
+                pizza: getTableData('pizza-table'),
+                mailer: getTableData('mailer-table'),
+                rsc: getTableData('rsc-table'),
+                document: getTableData('document-table')
+            };
+            
+            localStorage.setItem('ninjabox-catalogue-data', JSON.stringify(data));
+            showNotification('✅ Data saved successfully!');
+        }
+
+        // Get table data
+        function getTableData(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            const data = [];
+            
+            for (let row of rows) {
+                const inputs = row.getElementsByTagName('input');
+                const select = row.getElementsByClassName('badge-select')[0];
+                const checkbox = row.getElementsByClassName('highlight-check')[0];
+                
+                data.push({
+                    size: inputs[0].value,
+                    dimensions: inputs[1].value,
+                    material: inputs[2].value,
+                    badge: select.value,
+                    highlight: checkbox.checked
+                });
+            }
+            
+            return data;
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('ninjabox-catalogue-data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                setTableData('pizza-table', data.pizza);
+                setTableData('mailer-table', data.mailer);
+                setTableData('rsc-table', data.rsc);
+                setTableData('document-table', data.document);
+            }
+        }
+
+        // Set table data
+        function setTableData(tableId, data) {
+            const table = document.getElementById(tableId);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="text" value="${escapeHtml(item.size)}"></td>
+                    <td><input type="text" value="${escapeHtml(item.dimensions)}"></td>
+                    <td><input type="text" value="${escapeHtml(item.material)}"></td>
+                    <td>
+                        <select class="badge-select">
+                            <option value="">No Badge</option>
+                            <option value="Best Seller" ${item.badge === 'Best Seller' ? 'selected' : ''}>Best Seller</option>
+                            <option value="Popular" ${item.badge === 'Popular' ? 'selected' : ''}>Popular</option>
+                            <option value="New!" ${item.badge === 'New!' ? 'selected' : ''}>New!</option>
+                            <option value="Premium" ${item.badge === 'Premium' ? 'selected' : ''}>Premium</option>
+                            <option value="Best Value" ${item.badge === 'Best Value' ? 'selected' : ''}>Best Value</option>
+                        </select>
+                    </td>
+                    <td><input type="checkbox" class="highlight-check" ${item.highlight ? 'checked' : ''}></td>
+                    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                `;
+            });
+        }
+
+        // Generate HTML code
+        function generateHTML() {
+            const categories = [
+                { id: 'pizza', name: 'Pizza Box', firstCol: 'Size' },
+                { id: 'mailer', name: 'Mailer Box', firstCol: 'Size' },
+                { id: 'rsc', name: 'RSC Box', firstCol: 'Size' },
+                { id: 'document', name: 'Document Box', firstCol: 'Type' }
+            ];
+            
+            let html = '';
+            
+            categories.forEach(cat => {
+                const data = getTableData(cat.id + '-table');
+                html += `\n<!-- ${cat.name.toUpperCase()} TABLE -->\n`;
+                html += `<table class="variants-table">\n`;
+                html += `  <thead>\n    <tr>\n`;
+                html += `      <th>${cat.firstCol}</th>\n      <th>Dimensions</th>\n      <th>Material</th>\n`;
+                html += `      <th>Action</th>\n    </tr>\n  </thead>\n`;
+                html += `  <tbody>\n`;
+                
+                data.forEach(item => {
+                    const highlightClass = item.highlight ? ' class="highlighted-row"' : '';
+                    const badge = item.badge ? ` <span class="table-badge">${escapeHtml(item.badge)}</span>` : '';
+                    const productName = `${cat.name} - ${item.size}`;
+                    
+                    html += `    <tr${highlightClass}>\n`;
+                    html += `      <td><strong>${escapeHtml(item.size)}</strong>${badge}</td>\n`;
+                    html += `      <td>${escapeHtml(item.dimensions)}</td>\n`;
+                    html += `      <td>${escapeHtml(item.material)}</td>\n`;
+                    html += `      <td><button class="btn-table" onclick="showInquiry('${escapeHtml(productName)}')">Quote</button></td>\n`;
+                    html += `    </tr>\n`;
+                });
+                
+                html += `  </tbody>\n</table>\n\n`;
+            });
+            
+            document.getElementById('htmlOutput').textContent = html;
+            document.getElementById('outputArea').classList.add('show');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(html).then(() => {
+                showNotification('📋 HTML code copied to clipboard!');
+            }).catch(err => {
+                showNotification('❌ Failed to copy. Please copy manually from the box below.');
+            });
+            
+            // Scroll to output
+            document.getElementById('outputArea').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Preview data
+        function previewData() {
+            const data = {
+                pizza: getTableData('pizza-table'),
+                mailer: getTableData('mailer-table'),
+                rsc: getTableData('rsc-table'),
+                document: getTableData('document-table')
+            };
+            
+            console.log('Catalogue Data:', data);
+            alert('📊 Data preview logged to console. Press F12 to view.');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+
