@@ -7,6 +7,9 @@ let previousMousePosition = { x: 0, y: 0 };
 let rotationX = 0;
 let rotationY = 0;
 let zoom = 5;
+let gridHelper, referenceObject;
+let showGrid = true;
+let showReference = true;
 
 // Initialize 3D Box Simulator
 function initBoxSimulator() {
@@ -47,6 +50,12 @@ function initBoxSimulator() {
     const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
     directionalLight2.position.set(-5, -5, -5);
     scene.add(directionalLight2);
+
+    // Add reference grid
+    addReferenceGrid();
+
+    // Add reference object (person silhouette for scale)
+    addReferenceObject();
 
     // Create initial box
     updateBox();
@@ -103,6 +112,18 @@ function updateBox() {
 
     // Update info display
     updateBoxInfo(length, width, height);
+
+    // Update size comparison
+    updateSizeComparison(length, width, height);
+
+    // Update reference grid size
+    updateReferenceGrid(length, width, height);
+
+    // Update reference object position
+    updateReferenceObject(length, width, height);
+
+    // Update scale indicator
+    updateScaleIndicator(length, width, height);
 
     // Adjust camera to fit box
     const maxDim = Math.max(length, width, height) * scale;
@@ -273,6 +294,239 @@ function requestQuoteFromSimulator() {
             }
         }, 500);
     }
+}
+
+// Add reference grid
+function addReferenceGrid() {
+    if (gridHelper) {
+        scene.remove(gridHelper);
+    }
+    gridHelper = new THREE.GridHelper(10, 10, 0xcccccc, 0xeeeeee);
+    gridHelper.position.y = -0.5;
+    scene.add(gridHelper);
+}
+
+// Update reference grid size
+function updateReferenceGrid(length, width, height) {
+    if (!gridHelper) return;
+    
+    const maxDim = Math.max(length, width, height) * 0.1;
+    const gridSize = Math.max(10, maxDim * 2);
+    const divisions = Math.max(10, Math.floor(gridSize / 2));
+    
+    scene.remove(gridHelper);
+    gridHelper = new THREE.GridHelper(gridSize, divisions, 0xcccccc, 0xeeeeee);
+    gridHelper.position.y = -(height * 0.1) / 2;
+    if (showGrid) {
+        scene.add(gridHelper);
+    }
+}
+
+// Add reference object (person silhouette)
+function addReferenceObject() {
+    if (referenceObject) {
+        scene.remove(referenceObject);
+    }
+    
+    // Create a simple person silhouette (cylinder for body, sphere for head)
+    const group = new THREE.Group();
+    
+    // Body (cylinder)
+    const bodyGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 8);
+    const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.6 });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.y = 0.25;
+    group.add(body);
+    
+    // Head (sphere)
+    const headGeometry = new THREE.SphereGeometry(0.12, 8, 8);
+    const headMaterial = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.6 });
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.y = 0.5 + 0.12;
+    group.add(head);
+    
+    // Total height ~1.7 units (represents ~170cm person)
+    referenceObject = group;
+    referenceObject.scale.set(0.1, 0.1, 0.1); // Scale to represent 170cm person
+    referenceObject.position.set(3, 0, 0);
+    if (showReference) {
+        scene.add(referenceObject);
+    }
+}
+
+// Update reference object position
+function updateReferenceObject(length, width, height) {
+    if (!referenceObject) return;
+    
+    const maxDim = Math.max(length, width, height) * 0.1;
+    const offset = maxDim * 1.5;
+    referenceObject.position.set(offset, -(height * 0.1) / 2, 0);
+    
+    // Show/hide based on toggle
+    if (showReference) {
+        if (!scene.children.includes(referenceObject)) {
+            scene.add(referenceObject);
+        }
+    } else {
+        if (scene.children.includes(referenceObject)) {
+            scene.remove(referenceObject);
+        }
+    }
+}
+
+// Toggle reference grid
+function toggleReferenceGrid() {
+    showGrid = !showGrid;
+    const btn = document.getElementById('gridToggleBtn');
+    if (btn) {
+        btn.style.background = showGrid ? 'var(--secondary-color)' : 'rgba(255, 255, 255, 0.9)';
+        btn.style.color = showGrid ? 'white' : 'var(--secondary-color)';
+    }
+    
+    if (gridHelper) {
+        if (showGrid) {
+            if (!scene.children.includes(gridHelper)) {
+                scene.add(gridHelper);
+            }
+        } else {
+            if (scene.children.includes(gridHelper)) {
+                scene.remove(gridHelper);
+            }
+        }
+    }
+}
+
+// Toggle reference object
+function toggleReferenceObject() {
+    showReference = !showReference;
+    const btn = document.getElementById('referenceToggleBtn');
+    if (btn) {
+        btn.style.background = showReference ? 'var(--secondary-color)' : 'rgba(255, 255, 255, 0.9)';
+        btn.style.color = showReference ? 'white' : 'var(--secondary-color)';
+    }
+    
+    if (referenceObject) {
+        if (showReference) {
+            if (!scene.children.includes(referenceObject)) {
+                scene.add(referenceObject);
+            }
+        } else {
+            if (scene.children.includes(referenceObject)) {
+                scene.remove(referenceObject);
+            }
+        }
+    }
+}
+
+// Update size comparison text
+function updateSizeComparison(length, width, height) {
+    const comparisonText = document.getElementById('comparisonText');
+    if (!comparisonText) return;
+    
+    const volume = length * width * height;
+    const maxDim = Math.max(length, width, height);
+    const avgDim = (length + width + height) / 3;
+    
+    let comparison = '';
+    
+    // Pizza box comparison
+    if (length >= 25 && length <= 40 && width >= 20 && width <= 35 && height >= 3 && height <= 8) {
+        comparison = 'Similar to a standard pizza box';
+    }
+    // Shoebox comparison
+    else if (length >= 25 && length <= 35 && width >= 15 && width <= 25 && height >= 8 && height <= 15) {
+        comparison = 'Similar to a standard shoebox';
+    }
+    // Document box comparison
+    else if (length >= 20 && length <= 40 && width >= 15 && width <= 30 && height >= 5 && height <= 15) {
+        comparison = 'Similar to a document storage box';
+    }
+    // Mailer box comparison
+    else if (length >= 15 && length <= 30 && width >= 10 && width <= 25 && height >= 3 && height <= 10) {
+        comparison = 'Similar to a standard mailer box';
+    }
+    // Large box
+    else if (maxDim > 50) {
+        comparison = 'Large box - suitable for furniture or large items';
+    }
+    // Small box
+    else if (maxDim < 15) {
+        comparison = 'Small box - suitable for jewelry or small items';
+    }
+    // Medium box
+    else {
+        comparison = 'Medium-sized box - versatile for various products';
+    }
+    
+    // Add volume context
+    if (volume < 1000) {
+        comparison += ' (very compact)';
+    } else if (volume < 5000) {
+        comparison += ' (compact)';
+    } else if (volume < 15000) {
+        comparison += ' (medium)';
+    } else if (volume < 50000) {
+        comparison += ' (large)';
+    } else {
+        comparison += ' (very large)';
+    }
+    
+    comparisonText.textContent = comparison;
+}
+
+// Update scale indicator
+function updateScaleIndicator(length, width, height) {
+    const scaleRuler = document.getElementById('scaleRuler');
+    if (!scaleRuler) return;
+    
+    const maxDim = Math.max(length, width, height);
+    const scale = Math.min(100, maxDim); // Max 100cm shown on ruler
+    
+    // Create visual ruler marks
+    let rulerHTML = '';
+    for (let i = 0; i <= scale; i += 10) {
+        const position = (i / scale) * 100;
+        rulerHTML += `<div class="ruler-mark" style="left: ${position}%">
+            <div class="ruler-line"></div>
+            <span class="ruler-label">${i}cm</span>
+        </div>`;
+    }
+    scaleRuler.innerHTML = rulerHTML;
+}
+
+// Set preset size
+function setPresetSize(type) {
+    let length, width, height;
+    
+    switch(type) {
+        case 'pizza':
+            length = 32;
+            width = 32;
+            height = 4;
+            break;
+        case 'shoebox':
+            length = 30;
+            width = 20;
+            height = 12;
+            break;
+        case 'document':
+            length = 35;
+            width = 25;
+            height = 10;
+            break;
+        case 'mailer':
+            length = 25;
+            width = 18;
+            height = 5;
+            break;
+        default:
+            return;
+    }
+    
+    document.getElementById('boxLength').value = length;
+    document.getElementById('boxWidth').value = width;
+    document.getElementById('boxHeight').value = height;
+    updateBox();
 }
 
 // Debounce function for input events

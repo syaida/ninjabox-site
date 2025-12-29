@@ -849,6 +849,23 @@
                                 <input type="number" id="boxHeight" min="1" max="200" value="15" step="0.1">
                             </div>
                         </div>
+                        <div class="preset-sizes">
+                            <h4><i class="fas fa-th"></i> Quick Presets</h4>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" onclick="setPresetSize('pizza')" title="Standard Pizza Box">
+                                    <i class="fas fa-pizza-slice"></i> Pizza Box
+                                </button>
+                                <button class="preset-btn" onclick="setPresetSize('shoebox')" title="Standard Shoebox">
+                                    <i class="fas fa-shoe-prints"></i> Shoebox
+                                </button>
+                                <button class="preset-btn" onclick="setPresetSize('document')" title="Document Box">
+                                    <i class="fas fa-folder"></i> Document Box
+                                </button>
+                                <button class="preset-btn" onclick="setPresetSize('mailer')" title="Mailer Box">
+                                    <i class="fas fa-box"></i> Mailer Box
+                                </button>
+                            </div>
+                        </div>
                         <div class="box-info">
                             <div class="info-item">
                                 <span class="info-label">Volume:</span>
@@ -858,6 +875,10 @@
                                 <span class="info-label">Surface Area:</span>
                                 <span class="info-value" id="boxSurfaceArea">2,700 cm²</span>
                             </div>
+                        </div>
+                        <div class="size-comparison" id="sizeComparison">
+                            <h4><i class="fas fa-balance-scale"></i> Size Comparison</h4>
+                            <p id="comparisonText">Similar to a medium pizza box</p>
                         </div>
                         <div class="simulator-actions">
                             <button class="btn btn-primary" onclick="resetBoxDimensions()">
@@ -892,6 +913,16 @@
                         <button class="control-btn" onclick="toggleWireframe()" title="Toggle Wireframe">
                             <i class="fas fa-cube"></i>
                         </button>
+                        <button class="control-btn" onclick="toggleReferenceGrid()" title="Toggle Grid" id="gridToggleBtn">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="control-btn" onclick="toggleReferenceObject()" title="Toggle Reference Object" id="referenceToggleBtn">
+                            <i class="fas fa-user"></i>
+                        </button>
+                    </div>
+                    <div class="scale-indicator">
+                        <div class="scale-ruler" id="scaleRuler"></div>
+                        <span class="scale-label">Scale Reference</span>
                     </div>
                 </div>
             </div>
