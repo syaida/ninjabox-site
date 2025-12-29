@@ -364,6 +364,10 @@ section {
     margin: 0 auto;
 }
 
+.about-text {
+    text-align: center;
+}
+
 .about-text h3 {
     font-size: 2.25rem;
     color: var(--primary-color);
