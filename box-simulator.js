@@ -7,9 +7,9 @@ let previousMousePosition = { x: 0, y: 0 };
 let rotationX = 0;
 let rotationY = 0;
 let zoom = 5;
-let gridHelper, referenceObject;
+let gridHelper, referenceObject, currentReferenceType = 'none';
 let showGrid = true;
-let showReference = true;
+let showReference = false;
 
 // Initialize 3D Box Simulator
 function initBoxSimulator() {
@@ -54,8 +54,7 @@ function initBoxSimulator() {
     // Add reference grid
     addReferenceGrid();
 
-    // Add reference object (person silhouette for scale)
-    addReferenceObject();
+    // Reference object will be created when user selects one
 
     // Create initial box
     updateBox();
@@ -356,14 +355,25 @@ function addReferenceObject() {
 
 // Update reference object position
 function updateReferenceObject(length, width, height) {
-    if (!referenceObject) return;
+    updateReferenceObjectPosition();
+}
+
+// Update reference object position based on box size
+function updateReferenceObjectPosition() {
+    if (!referenceObject || currentReferenceType === 'none') return;
+    
+    const length = parseFloat(document.getElementById('boxLength').value) || 30;
+    const width = parseFloat(document.getElementById('boxWidth').value) || 20;
+    const height = parseFloat(document.getElementById('boxHeight').value) || 15;
     
     const maxDim = Math.max(length, width, height) * 0.1;
     const offset = maxDim * 1.5;
+    
+    // Position next to the box
     referenceObject.position.set(offset, -(height * 0.1) / 2, 0);
     
     // Show/hide based on toggle
-    if (showReference) {
+    if (showReference && currentReferenceType !== 'none') {
         if (!scene.children.includes(referenceObject)) {
             scene.add(referenceObject);
         }
@@ -372,6 +382,21 @@ function updateReferenceObject(length, width, height) {
             scene.remove(referenceObject);
         }
     }
+}
+
+// Set reference object type
+function setReferenceObject(type, event) {
+    // Update button states
+    document.querySelectorAll('.ref-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (type !== 'none' && event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    createReferenceObject(type);
+    updateReferenceObjectPosition();
 }
 
 // Toggle reference grid
@@ -396,25 +421,12 @@ function toggleReferenceGrid() {
     }
 }
 
-// Toggle reference object
+// Toggle reference object (kept for backward compatibility)
 function toggleReferenceObject() {
-    showReference = !showReference;
-    const btn = document.getElementById('referenceToggleBtn');
-    if (btn) {
-        btn.style.background = showReference ? 'var(--secondary-color)' : 'rgba(255, 255, 255, 0.9)';
-        btn.style.color = showReference ? 'white' : 'var(--secondary-color)';
-    }
-    
-    if (referenceObject) {
-        if (showReference) {
-            if (!scene.children.includes(referenceObject)) {
-                scene.add(referenceObject);
-            }
-        } else {
-            if (scene.children.includes(referenceObject)) {
-                scene.remove(referenceObject);
-            }
-        }
+    if (currentReferenceType === 'none') {
+        setReferenceObject('marker'); // Default to marker if none selected
+    } else {
+        setReferenceObject('none');
     }
 }
 

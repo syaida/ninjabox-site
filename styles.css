@@ -2062,6 +2062,72 @@ html {
     line-height: 1.6;
 }
 
+.reference-objects {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.reference-objects h4 {
+    color: var(--primary-color);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reference-objects h4 i {
+    color: var(--secondary-color);
+}
+
+.reference-subtitle {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin: 0 0 1rem 0;
+}
+
+.reference-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.ref-btn {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--light-gray);
+    border-radius: 10px;
+    color: var(--text-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.ref-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.ref-btn.active {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.ref-btn i {
+    font-size: 0.9rem;
+}
+
 .scale-indicator {
     position: absolute;
     bottom: 1.5rem;
@@ -2232,6 +2298,10 @@ html {
     }
     
     .preset-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .reference-buttons {
         grid-template-columns: 1fr;
     }
     

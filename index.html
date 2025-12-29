@@ -880,6 +880,33 @@
                             <h4><i class="fas fa-balance-scale"></i> Size Comparison</h4>
                             <p id="comparisonText">Similar to a medium pizza box</p>
                         </div>
+                        <div class="reference-objects">
+                            <h4><i class="fas fa-cube"></i> Compare With</h4>
+                            <p class="reference-subtitle">Select an object to see size comparison</p>
+                            <div class="reference-buttons">
+                                <button class="ref-btn" onclick="setReferenceObject('marker', event)" title="Marker Pen">
+                                    <i class="fas fa-pen"></i> Marker Pen
+                                </button>
+                                <button class="ref-btn" onclick="setReferenceObject('phone', event)" title="Smartphone">
+                                    <i class="fas fa-mobile-alt"></i> Phone
+                                </button>
+                                <button class="ref-btn" onclick="setReferenceObject('laptop', event)" title="Laptop">
+                                    <i class="fas fa-laptop"></i> Laptop
+                                </button>
+                                <button class="ref-btn" onclick="setReferenceObject('bottle', event)" title="Water Bottle">
+                                    <i class="fas fa-wine-bottle"></i> Bottle
+                                </button>
+                                <button class="ref-btn" onclick="setReferenceObject('cup', event)" title="Coffee Cup">
+                                    <i class="fas fa-coffee"></i> Coffee Cup
+                                </button>
+                                <button class="ref-btn" onclick="setReferenceObject('book', event)" title="Book">
+                                    <i class="fas fa-book"></i> Book
+                                </button>
+                                <button class="ref-btn" onclick="setReferenceObject('none', event)" title="Hide Object">
+                                    <i class="fas fa-times"></i> Hide
+                                </button>
+                            </div>
+                        </div>
                         <div class="simulator-actions">
                             <button class="btn btn-primary" onclick="resetBoxDimensions()">
                                 <i class="fas fa-redo"></i> Reset
@@ -915,9 +942,6 @@
                         </button>
                         <button class="control-btn" onclick="toggleReferenceGrid()" title="Toggle Grid" id="gridToggleBtn">
                             <i class="fas fa-th"></i>
-                        </button>
-                        <button class="control-btn" onclick="toggleReferenceObject()" title="Toggle Reference Object" id="referenceToggleBtn">
-                            <i class="fas fa-user"></i>
                         </button>
                     </div>
                     <div class="scale-indicator">
