@@ -160,5 +160,5 @@ For technical support or inquiries:
 
 ## License
 
-© 2024 NinjaBox Sdn Bhd. All rights reserved.
+© 2025 NinjaBox Sdn Bhd. All rights reserved.
 

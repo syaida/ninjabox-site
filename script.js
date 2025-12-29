@@ -755,14 +755,25 @@ function showNotification(message) {
 
 // Open Catalogue Request Form
 function openCatalogueForm() {
+    console.log('Opening catalogue form...');
     const modal = document.getElementById('catalogueModal');
-    modal.style.display = 'block';
+    if (!modal) {
+        console.error('Catalogue modal not found!');
+        return;
+    }
+    // Show modal with flexbox display
+    modal.style.display = 'flex';
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    console.log('Modal opened successfully');
 }
 
 // Close Catalogue Modal
 function closeCatalogueModal() {
     const modal = document.getElementById('catalogueModal');
     modal.style.display = 'none';
+    // Restore body scroll
+    document.body.style.overflow = '';
     // Reset form
     document.getElementById('catalogueForm').reset();
 }
@@ -772,7 +783,7 @@ function closeCatalogueModal() {
 const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY"; // Replace with your Web3Forms access key
 
 // Handle Catalogue Form Submission
-function handleCatalogueForm(event) {
+async function handleCatalogueForm(event) {
     event.preventDefault();
     
     // Get form data
@@ -790,56 +801,278 @@ function handleCatalogueForm(event) {
     const submitBtn = event.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Sending...';
+    submitBtn.textContent = '⏳ Processing...';
     
-    // Generate PDF and send via email
-    generateAndSendCataloguePDF(data, submitBtn, originalText);
-}
-
-// Generate PDF and send via email
-function generateAndSendCataloguePDF(userData, submitBtn, originalText) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Set colors
-    const primaryColor = [26, 26, 26]; // Black
-    const accentColor = [255, 107, 53]; // Orange
-    
-    // Cover Page
-    doc.setFillColor(...accentColor);
-    doc.rect(0, 0, 210, 297, 'F');
-    
-    // Add logo first, then continue with text
-    addLogoToPDF(doc, function() {
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(36);
-        doc.setFont('helvetica', 'bold');
-        doc.text('NINJABOX', 105, 80, { align: 'center' });
-        
-        doc.setFontSize(20);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Product Catalogue', 105, 100, { align: 'center' });
-        
-        doc.setFontSize(14);
-        doc.text('Premium Packaging Solutions', 105, 115, { align: 'center' });
-        
-        // Personalized message
-        if (userData.name) {
-            doc.setFontSize(12);
-            doc.text(`Prepared for: ${userData.name}`, 105, 140, { align: 'center' });
-            if (userData.company) {
-                doc.text(`Company: ${userData.company}`, 105, 150, { align: 'center' });
+    try {
+        // Step 1: Download PDF immediately (must happen in user interaction context)
+        // Don't wait for Firebase - download first, save in background
+        let downloadSuccess = false;
+        try {
+            await downloadCataloguePDF();
+            downloadSuccess = true;
+            submitBtn.textContent = '✅ Downloaded!';
+            showNotification('✅ Catalogue PDF downloaded! Saving your information...');
+        } catch (downloadError) {
+            console.error('PDF download error:', downloadError);
+            // Fallback: Try direct link download
+            try {
+                const link = document.createElement('a');
+                link.href = '2025 CATALOGUE NINJABOX.pdf';
+                link.download = '2025_CATALOGUE_NINJABOX.pdf';
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                downloadSuccess = true;
+                submitBtn.textContent = '✅ Downloading!';
+                showNotification('✅ PDF download started! Saving your information...');
+            } catch (fallbackError) {
+                // Last resort: open in new tab
+                window.open('2025 CATALOGUE NINJABOX.pdf', '_blank');
+                submitBtn.textContent = '✅ Opened!';
+                showNotification('✅ PDF opened! Saving your information...');
             }
         }
         
-        // Contact Info
-        doc.setFontSize(11);
-        doc.text('Email: enquiry@ninjabox.my', 105, 200, { align: 'center' });
-        doc.text('Phone: 017-228 9028', 105, 210, { align: 'center' });
-        doc.text('Address: Lot 2210, Jalan Kasawari, Kampung Batu 9 Kebun Baru', 105, 220, { align: 'center' });
-        doc.text('42500 Telok Panglima Garang, Selangor', 105, 230, { align: 'center' });
+        // Step 2: Save lead to Firebase database (in background)
+        saveLeadToDatabase(data).then(() => {
+            console.log('✅ Lead saved to database');
+            if (downloadSuccess) {
+                showNotification('✅ Catalogue PDF downloaded!');
+            } else {
+                showNotification('✅ Lead saved successfully!');
+            }
+        }).catch(err => {
+            console.error('Failed to save lead:', err);
+            console.error('Full error:', err);
+            
+            // Show specific error message
+            let errorMsg = '⚠️ PDF downloaded, but failed to save lead.';
+            if (err.message && err.message.includes('Permission denied')) {
+                errorMsg = '⚠️ PDF downloaded, but failed to save lead. Please check Firestore rules.';
+            } else if (err.message && err.message.includes('Firestore unavailable')) {
+                errorMsg = '⚠️ PDF downloaded, but Firestore is unavailable. Please check Firebase setup.';
+            }
+            
+            showNotification(errorMsg);
+        });
         
-        continueGenerateAndSendCataloguePDF(doc, userData, submitBtn, originalText, primaryColor, accentColor);
+        // Step 3: Close modal after delay
+        setTimeout(() => {
+            closeCatalogueModal();
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error processing catalogue request:', error);
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        showNotification('⚠️ Error processing request. Please try again.');
+    }
+}
+
+// Save lead to Firebase Firestore database
+async function saveLeadToDatabase(leadData) {
+    try {
+        // Check if Firebase is available
+        if (typeof firebase === 'undefined' || !firebase.apps.length) {
+            console.warn('Firebase not initialized. Lead not saved to database.');
+            throw new Error('Firebase not initialized');
+        }
+        
+        // Initialize Firestore
+        const db = firebase.firestore();
+        
+        // Prepare lead document with timestamp
+        const leadDocument = {
+            name: leadData.name || '',
+            email: leadData.email || '',
+            phone: leadData.phone || '',
+            company: leadData.company || '',
+            interest: leadData.interest || '',
+            message: leadData.message || '',
+            source: 'Catalogue Request',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            date: new Date().toISOString(),
+            status: 'new'
+        };
+        
+        console.log('Attempting to save lead:', leadDocument);
+        
+        // Save to 'leads' collection in Firestore
+        const docRef = await db.collection('leads').add(leadDocument);
+        
+        console.log('✅ Lead saved to Firebase database');
+        console.log('Document ID:', docRef.id);
+        return true;
+    } catch (error) {
+        console.error('❌ Error saving lead to database:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        // Show specific error messages
+        if (error.code === 'permission-denied') {
+            console.error('⚠️ Permission denied! Check Firestore rules allow creating leads.');
+            throw new Error('Permission denied. Please check Firestore security rules.');
+        } else if (error.code === 'unavailable') {
+            console.error('⚠️ Firestore unavailable. Check if Firestore is enabled.');
+            throw new Error('Firestore unavailable. Please check Firebase setup.');
+        }
+        
+        // Re-throw error so it can be handled by caller
+        throw error;
+    }
+}
+
+// Download catalogue PDF automatically
+async function downloadCataloguePDF() {
+    try {
+        // Try fetching the PDF file - handle spaces in filename
+        const pdfFileName = '2025 CATALOGUE NINJABOX.pdf';
+        let response;
+        
+        // Try direct fetch first
+        try {
+            response = await fetch(pdfFileName);
+            if (!response.ok) {
+                throw new Error('Direct fetch failed');
+            }
+        } catch (e) {
+            // If direct fetch fails, try with URL encoding
+            console.log('Direct fetch failed, trying URL encoding...');
+            const encodedFileName = encodeURIComponent(pdfFileName);
+            response = await fetch(encodedFileName);
+            
+            if (!response.ok) {
+                // Try with spaces replaced with %20
+                const urlEncoded = pdfFileName.replace(/ /g, '%20');
+                response = await fetch(urlEncoded);
+            }
+        }
+        
+        if (!response || !response.ok) {
+            throw new Error(`Catalogue PDF not found. Status: ${response?.status || 'unknown'}`);
+        }
+        
+        // Get PDF as blob
+        const pdfBlob = await response.blob();
+        
+        if (!pdfBlob || pdfBlob.size === 0) {
+            throw new Error('PDF file is empty or invalid');
+        }
+        
+        console.log(`PDF blob size: ${pdfBlob.size} bytes`);
+        
+        // Create download link with better compatibility
+        const url = window.URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = '2025_CATALOGUE_NINJABOX.pdf';
+        link.style.display = 'none'; // Hide the link
+        link.setAttribute('download', '2025_CATALOGUE_NINJABOX.pdf'); // Ensure download attribute
+        
+        // Add to DOM
+        document.body.appendChild(link);
+        
+        // Trigger download - use both methods for better compatibility
+        try {
+            link.click();
+        } catch (clickError) {
+            // Fallback: try direct download
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 1000);
+        }
+        
+        // Clean up after a delay to ensure download starts
+        setTimeout(() => {
+            if (document.body.contains(link)) {
+                document.body.removeChild(link);
+            }
+            window.URL.revokeObjectURL(url);
+        }, 200);
+        
+        console.log('✅ PDF download triggered successfully');
+        return true;
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack
+        });
+        
+        // Show user-friendly error
+        showNotification('⚠️ PDF download failed. Please check if the file exists.');
+        throw error;
+    }
+}
+
+// Send catalogue email with PDF attachment
+function sendCatalogueEmail(userData, pdfBlob, submitBtn, originalText) {
+    // Create FormData for Web3Forms
+    const formData = new FormData();
+    const fileName = '2025_CATALOGUE_NINJABOX.pdf';
+    
+    formData.append('access_key', WEB3FORMS_ACCESS_KEY);
+    formData.append('subject', `NinjaBox Product Catalogue - Requested by ${userData.name}`);
+    formData.append('from_name', 'NinjaBox');
+    formData.append('email', userData.email);
+    formData.append('name', userData.name);
+    formData.append('message', `
+Thank you for requesting our product catalogue!
+
+Name: ${userData.name}
+Email: ${userData.email}
+Phone: ${userData.phone || 'Not provided'}
+Company: ${userData.company || 'Not provided'}
+Product Interest: ${userData.interest || 'All Products'}
+${userData.message ? `Message: ${userData.message}` : ''}
+
+Please find attached our complete NinjaBox Product Catalogue PDF.
+
+Best regards,
+NinjaBox Team
+    `);
+    
+    formData.append('attachment', pdfBlob, fileName);
+    
+    // Send email via Web3Forms
+    fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Email sent successfully!', data);
+            
+            // Reset button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            
+            // Close modal
+            closeCatalogueModal();
+            
+            // Show success message
+            showNotification('✅ Catalogue PDF sent to your email! Please check your inbox (and spam folder).');
+        } else {
+            throw new Error(data.message || 'Email sending failed');
+        }
+    })
+    .catch(error => {
+        console.error('Email sending failed:', error);
+        
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        
+        // Show error message
+        showNotification('⚠️ Email failed. Please check your email settings or contact us directly.');
     });
 }
 
@@ -1143,71 +1376,8 @@ function continueGenerateAndSendCataloguePDF(doc, userData, submitBtn, originalT
     // Convert PDF to blob for attachment
     const pdfBlob = doc.output('blob');
     
-    // Create FormData for Web3Forms
-    const formData = new FormData();
-    formData.append('access_key', WEB3FORMS_ACCESS_KEY);
-    formData.append('subject', `NinjaBox Product Catalogue - Requested by ${userData.name}`);
-    formData.append('from_name', 'NinjaBox');
-    formData.append('email', userData.email);
-    formData.append('name', userData.name);
-    formData.append('message', `
-Thank you for requesting our product catalogue!
-
-Name: ${userData.name}
-Email: ${userData.email}
-Phone: ${userData.phone || 'Not provided'}
-Company: ${userData.company || 'Not provided'}
-Product Interest: ${userData.interest || 'All Products'}
-${userData.message ? `Message: ${userData.message}` : ''}
-
-Please find attached our complete NinjaBox Product Catalogue PDF.
-
-Best regards,
-NinjaBox Team
-    `);
-    
-    // Add PDF as attachment
-    const fileName = userData.name 
-        ? `NinjaBox-Catalogue-${userData.name.replace(/\s+/g, '-')}.pdf`
-        : 'NinjaBox-Product-Catalogue.pdf';
-    formData.append('attachment', pdfBlob, fileName);
-    
-    // Send email via Web3Forms
-    fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Email sent successfully!', data);
-            
-            // Reset button
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-            
-            // Close modal
-            closeCatalogueModal();
-            
-            // Show success message
-            showNotification('✅ Catalogue PDF sent to your email! Please check your inbox (and spam folder).');
-        } else {
-            throw new Error(data.message || 'Email sending failed');
-        }
-    })
-    .catch(error => {
-        console.error('Email sending failed:', error);
-        
-        // Reset button
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-        
-        // Fallback: Download PDF if email fails
-        doc.save(fileName);
-        
-        // Show error message
-        showNotification('⚠️ Email failed. PDF downloaded instead. Please check your email settings.');
-    });
+    // Send email with PDF attachment
+    sendCatalogueEmail(userData, pdfBlob, submitBtn, originalText);
 }
 
 // Generate PDF with personalized information (for direct download - kept as backup)
@@ -1560,314 +1730,9 @@ function continueGenerateCataloguePDF(doc, userData, primaryColor, accentColor) 
         : 'NinjaBox-Product-Catalogue.pdf';
     doc.save(fileName);
 }
-    
-    // Add new page
-    doc.addPage();
-    yPosition = 20;
-    
-    // Table of Contents
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Table of Contents', 20, yPosition);
-    
-    yPosition += 15;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text('1. Pizza Box', 25, yPosition);
-    yPosition += 8;
-    doc.text('2. Mailer Box', 25, yPosition);
-    yPosition += 8;
-    doc.text('3. RSC Box', 25, yPosition);
-    yPosition += 8;
-    doc.text('4. Document Box', 25, yPosition);
-    
-    // PIZZA BOX SECTION
-    doc.addPage();
-    yPosition = 20;
-    
-    doc.setFillColor(...accentColor);
-    doc.rect(20, yPosition - 5, 170, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PIZZA BOX', 25, yPosition);
-    
-    yPosition += 15;
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    
-    // Pizza Box Table Header
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, yPosition - 5, 170, 7, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.text('Size', 25, yPosition);
-    doc.text('Dimensions', 70, yPosition);
-    doc.text('Material', 130, yPosition);
-    
-    yPosition += 10;
-    doc.setFont('helvetica', 'normal');
-    
-    // Pizza Box Products
-    const pizzaBoxes = [
-        { size: 'PZ01 (8")', dim: '20.8cm x 20.8cm x 3.8cm', material: 'B-Flute Corrugated' },
-        { size: 'PZ02 (10")', dim: '26cm x 26cm x 4cm', material: 'B-Flute Corrugated' },
-        { size: 'PZ03 (12")', dim: '31cm x 31cm x 4.6cm', material: 'B-Flute Corrugated' },
-        { size: 'PZ04 (7")', dim: '18.3cm x 18.3cm x 4cm', material: 'B-Flute Corrugated' },
-        { size: 'PZ05 (9")', dim: '23.5cm x 23.5cm x 4cm', material: 'B-Flute Corrugated' },
-        { size: 'PZ06 (11")', dim: '29cm x 29cm x 4.6cm', material: 'B-Flute Corrugated' }
-    ];
-    
-    pizzaBoxes.forEach((item, index) => {
-        if (yPosition > 270) {
-            doc.addPage();
-            yPosition = 20;
-        }
-        doc.text(item.size, 25, yPosition);
-        doc.text(item.dim, 70, yPosition);
-        doc.text(item.material, 130, yPosition);
-        yPosition += 8;
-    });
-    
-    // MAILER BOX SECTION
-    doc.addPage();
-    yPosition = 20;
-    
-    doc.setFillColor(...accentColor);
-    doc.rect(20, yPosition - 5, 170, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('MAILER BOX', 25, yPosition);
-    
-    yPosition += 15;
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(10);
-    
-    // Mailer Box Table Header
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, yPosition - 5, 170, 7, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.text('Size', 25, yPosition);
-    doc.text('Dimensions', 70, yPosition);
-    doc.text('Material', 130, yPosition);
-    
-    yPosition += 10;
-    doc.setFont('helvetica', 'normal');
-    
-    const mailerBoxes = [
-        { size: 'MBA', dim: '24cm x 19cm x 6.5cm', material: 'B-Flute Corrugated' },
-        { size: 'MBB', dim: '33cm x 24cm x 8.5cm', material: 'B-Flute Corrugated' },
-        { size: 'MBC', dim: '62cm x 51cm x 13.5cm', material: 'B-Flute Corrugated' },
-        { size: 'MBD', dim: '23cm x 15cm x 5.5cm', material: 'B-Flute Corrugated' },
-        { size: 'MBE', dim: '25.5cm x 21cm x 6.5cm', material: 'B-Flute Corrugated' },
-        { size: 'MBF', dim: '29.4cm x 21.2cm x 5.8cm', material: 'B-Flute Corrugated' },
-        { size: 'MBG', dim: '29cm x 24.5cm x 16cm', material: 'B-Flute Corrugated' },
-        { size: 'MBH', dim: '46cm x 30cm x 14cm', material: 'B-Flute Corrugated' },
-        { size: 'NM1', dim: '15cm x 15cm x 5cm', material: 'B-Flute Corrugated' },
-        { size: 'NM2', dim: '18cm x 10cm x 6cm', material: 'B-Flute Corrugated' },
-        { size: 'NM3', dim: '20cm x 14cm x 4cm', material: 'B-Flute Corrugated' },
-        { size: 'NM4', dim: '25cm x 25cm x 6cm', material: 'B-Flute Corrugated' },
-        { size: 'NM5', dim: '25cm x 20cm x 7cm', material: 'B-Flute Corrugated' },
-        { size: 'NM6', dim: '27cm x 17cm x 5cm', material: 'B-Flute Corrugated' },
-        { size: 'NM7', dim: '30cm x 22cm x 5cm', material: 'B-Flute Corrugated' },
-        { size: 'NM8', dim: '30cm x 30cm x 8cm', material: 'B-Flute Corrugated' },
-        { size: 'NM9', dim: '32cm x 24cm x 6cm', material: 'B-Flute Corrugated' },
-        { size: 'NM10', dim: '33cm x 25cm x 7cm', material: 'B-Flute Corrugated' },
-        { size: 'NM11', dim: '35cm x 25cm x 8cm', material: 'B-Flute Corrugated' },
-        { size: 'NM12', dim: '35cm x 30cm x 8cm', material: 'B-Flute Corrugated' },
-        { size: 'NM13', dim: '38cm x 28cm x 8cm', material: 'B-Flute Corrugated' },
-        { size: 'NM14', dim: '40cm x 30cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'NM15', dim: '42cm x 32cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'NM16', dim: '45cm x 35cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'NM17', dim: '29cm x 12cm x 11cm', material: 'B-Flute Corrugated' },
-        { size: 'NM18', dim: '27.5cm x 20cm x 10.5cm', material: 'B-Flute Corrugated' },
-        { size: 'NM19', dim: '26.5cm x 21cm x 12cm', material: 'B-Flute Corrugated' },
-        { size: 'NM20', dim: '33.2cm x 23.4cm x 11.3cm', material: 'B-Flute Corrugated' },
-        { size: 'NM21', dim: '45.2cm x 33.8cm x 7cm', material: 'B-Flute Corrugated' }
-    ];
-    
-    mailerBoxes.forEach((item) => {
-        if (yPosition > 270) {
-            doc.addPage();
-            yPosition = 20;
-            // Re-add table header on new page
-            doc.setFillColor(240, 240, 240);
-            doc.rect(20, yPosition - 5, 170, 7, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.text('Size', 25, yPosition);
-            doc.text('Dimensions', 70, yPosition);
-            doc.text('Material', 130, yPosition);
-            yPosition += 10;
-            doc.setFont('helvetica', 'normal');
-        }
-        doc.text(item.size, 25, yPosition);
-        doc.text(item.dim, 70, yPosition);
-        doc.text(item.material, 130, yPosition);
-        yPosition += 8;
-    });
-    
-    // RSC BOX SECTION
-    doc.addPage();
-    yPosition = 20;
-    
-    doc.setFillColor(...accentColor);
-    doc.rect(20, yPosition - 5, 170, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('RSC BOX', 25, yPosition);
-    
-    yPosition += 15;
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(10);
-    
-    // RSC Box Table Header
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, yPosition - 5, 170, 7, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.text('Size', 25, yPosition);
-    doc.text('Dimensions', 70, yPosition);
-    doc.text('Material', 130, yPosition);
-    
-    yPosition += 10;
-    doc.setFont('helvetica', 'normal');
-    
-    const rscBoxes = [
-        { size: 'R01', dim: '15cm x 10cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R02', dim: '15cm x 15cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R03', dim: '20cm x 10cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R04', dim: '20cm x 20cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R05', dim: '25cm x 15cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R06', dim: '25cm x 25cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R07', dim: '30cm x 20cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R08', dim: '30cm x 30cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R09', dim: '25cm x 20cm x 20cm', material: 'B-Flute Corrugated' },
-        { size: 'R10', dim: '30cm x 20cm x 20cm', material: 'B-Flute Corrugated' },
-        { size: 'R11', dim: '30cm x 30cm x 20cm', material: 'B-Flute Corrugated' },
-        { size: 'R12', dim: '35cm x 25cm x 20cm', material: 'B-Flute Corrugated' },
-        { size: 'R13', dim: '40cm x 30cm x 20cm', material: 'B-Flute Corrugated' },
-        { size: 'R14', dim: '40cm x 40cm x 20cm', material: 'B-Flute Corrugated' },
-        { size: 'R15', dim: '15cm x 10cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R16', dim: '15cm x 15cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R17', dim: '20cm x 10cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R18', dim: '20cm x 20cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R19', dim: '25cm x 15cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R20', dim: '25cm x 25cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R21', dim: '30cm x 20cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R22', dim: '30cm x 30cm x 10cm', material: 'B-Flute Corrugated' },
-        { size: 'R23', dim: '20cm x 15cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R24', dim: '25cm x 15cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R25', dim: '25cm x 25cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R26', dim: '30cm x 20cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R27', dim: '30cm x 30cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R28', dim: '35cm x 25cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R29', dim: '35cm x 35cm x 15cm', material: 'B-Flute Corrugated' },
-        { size: 'R30', dim: '40cm x 30cm x 15cm', material: 'B-Flute Corrugated' }
-    ];
-    
-    rscBoxes.forEach((item) => {
-        if (yPosition > 270) {
-            doc.addPage();
-            yPosition = 20;
-            // Re-add table header on new page
-            doc.setFillColor(240, 240, 240);
-            doc.rect(20, yPosition - 5, 170, 7, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.text('Size', 25, yPosition);
-            doc.text('Dimensions', 70, yPosition);
-            doc.text('Material', 130, yPosition);
-            yPosition += 10;
-            doc.setFont('helvetica', 'normal');
-        }
-        doc.text(item.size, 25, yPosition);
-        doc.text(item.dim, 70, yPosition);
-        doc.text(item.material, 130, yPosition);
-        yPosition += 8;
-    });
-    
-    // DOCUMENT BOX SECTION
-    doc.addPage();
-    yPosition = 20;
-    
-    doc.setFillColor(...accentColor);
-    doc.rect(20, yPosition - 5, 170, 8, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('DOCUMENT BOX', 25, yPosition);
-    
-    yPosition += 15;
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(10);
-    
-    // Document Box Table Header
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, yPosition - 5, 170, 7, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.text('Size', 25, yPosition);
-    doc.text('Dimensions', 70, yPosition);
-    doc.text('Material', 130, yPosition);
-    
-    yPosition += 10;
-    doc.setFont('helvetica', 'normal');
-    
-    const documentBoxes = [
-        { size: 'DB1', dim: '35cm x 25cm x 26cm', material: 'B-Flute Corrugated' },
-        { size: 'DB2', dim: '41cm x 32cm x 29.5cm', material: 'B-Flute Corrugated' },
-        { size: 'DB3', dim: '45.7cm x 36.8cm x 30.5cm', material: 'B-Flute Corrugated' }
-    ];
-    
-    documentBoxes.forEach((item) => {
-        doc.text(item.size, 25, yPosition);
-        doc.text(item.dim, 70, yPosition);
-        doc.text(item.material, 130, yPosition);
-        yPosition += 8;
-    });
-    
-    // Contact Page
-    doc.addPage();
-    yPosition = 50;
-    
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Contact Us', 105, yPosition, { align: 'center' });
-    
-    yPosition += 20;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Email: enquiry@ninjabox.my', 105, yPosition, { align: 'center' });
-    yPosition += 10;
-    doc.text('Phone: 017-228 9028', 105, yPosition, { align: 'center' });
-    yPosition += 10;
-    doc.text('Address:', 105, yPosition, { align: 'center' });
-    yPosition += 10;
-    doc.setFontSize(10);
-    doc.text('Lot 2210, Jalan Kasawari, Kampung Batu 9 Kebun Baru', 105, yPosition, { align: 'center' });
-    yPosition += 8;
-    doc.text('42500 Telok Panglima Garang, Selangor', 105, yPosition, { align: 'center' });
-    
-    yPosition += 20;
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Custom Size & Printing Available!', 105, yPosition, { align: 'center' });
-    
-    // Save PDF with personalized filename
-    const fileName = userData.name 
-        ? `NinjaBox-Catalogue-${userData.name.replace(/\s+/g, '-')}.pdf`
-        : 'NinjaBox-Product-Catalogue.pdf';
-    doc.save(fileName);
-}
 
-// Close modal when clicking outside
-window.addEventListener('click', (e) => {
-    const catalogueModal = document.getElementById('catalogueModal');
-    if (e.target === catalogueModal) {
-        closeCatalogueModal();
-    }
-});
+// Modal will only close when clicking the X button, not when clicking outside
+// This prevents accidental closing when user clicks outside the form
 
 // Toggle Expandable Catalogue Category
 function toggleCategory(element) {

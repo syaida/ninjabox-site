@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // LEADS COLLECTION - For Catalogue Requests
+    // ============================================
+    // Allow anyone to create leads (for form submissions)
+    // Only authenticated users can read leads (for security)
+    match /leads/{leadId} {
+      allow create: if true;  // Anyone can create leads
+      allow read: if request.auth != null;  // Only authenticated users can read
+      allow update, delete: if request.auth != null;  // Only authenticated users can modify
+    }
+    
+    // ============================================
+    // PRODUCTS COLLECTION - For Catalogue Display
+    // ============================================
+    // Allow public read access to products (for website catalogue)
+    // Only authenticated users can write
+    match /products/{productId} {
+      allow read: if true;  // Public read access
+      allow write: if request.auth != null;  // Only authenticated users can write
+    }
+    
+    // ============================================
+    // TEST COLLECTION - For testing purposes
+    // ============================================
+    match /_test/{document=**} {
+      allow read, write: if true;  // Allow test collection for testing
+    }
+    
+    // ============================================
+    // DEFAULT RULE - Deny all other access
+    // ============================================
+    match /{document=**} {
+      allow read, write: if false;  // Deny access to all other collections
+    }
+  }
+}
+

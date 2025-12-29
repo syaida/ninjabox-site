@@ -1717,7 +1717,7 @@ html {
 
 /* Modal */
 .modal {
-    display: none;
+    display: none; /* Hidden by default, changed to 'flex' when shown */
     position: fixed;
     z-index: 2000;
     left: 0;
@@ -1727,24 +1727,82 @@ html {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     animation: fadeIn 0.2s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Center content using flexbox when displayed */
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal[style*="display: flex"],
+.modal[style*="display:block"] {
+    display: flex !important;
 }
 
 .modal-content {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    margin: 15% auto;
+    margin: auto;
     padding: 2.5rem;
     border-radius: 20px;
     max-width: 520px;
+    width: 100%;
     position: relative;
     animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 20px 60px 0 rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.5);
+    /* Make content scrollable if too long */
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+    /* Custom scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.1);
+}
+
+/* Custom scrollbar for webkit browsers */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #d66815;
 }
 
 .modal-large {
     max-width: 600px;
+}
+
+/* Responsive modal styles */
+@media (max-width: 768px) {
+    .modal {
+        padding: 10px;
+    }
+    
+    .modal-content {
+        max-width: 95%;
+        max-height: 95vh;
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .modal-large {
+        max-width: 95%;
+    }
 }
 
 .catalogue-form {

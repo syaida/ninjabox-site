@@ -1,11 +1,20 @@
 // Catalogue Loader - Fetches data from Firebase and renders catalogue
-// Default material for ready stock
-const DEFAULT_MATERIAL = "B-Flute Corrugated";
+// Note: DEFAULT_MATERIAL is declared in firebase-config.js
+// We'll use that value or fallback to this constant if not available
+const getDefaultMaterial = () => {
+    return typeof DEFAULT_MATERIAL !== 'undefined' ? DEFAULT_MATERIAL : "B-Flute Corrugated";
+};
 
 // Category mapping (map your stock categories to website categories)
 const CATEGORY_MAPPING = {
     'pizza': ['pizza', 'pz', 'pizza box'],
-    'mailer': ['mailer', 'mb', 'mailer box'],
+    'big-mailer-brown': ['big mailer brown', 'big mb brown'],
+    'big-mailer-white': ['big mailer white', 'big mb white'],
+    'small-mailer-brown': ['small mailer brown', 'nm brown'],
+    'small-mailer-white': ['small mailer white', 'nm white'],
+    'big-mailer': ['big mailer', 'big mb', 'mailer box mb'],
+    'small-mailer': ['small mailer', 'nm', 'mailer box nm'],
+    'mailer': ['mailer', 'mb', 'mailer box'], // Fallback for general mailer
     'rsc': ['rsc', 'regular slotted', 'rsc box'],
     'document': ['document', 'archive', 'document box']
 };
@@ -16,6 +25,36 @@ const CATEGORY_INFO = {
         name: 'Pizza Box',
         description: 'Heat-resistant corrugated boxes',
         image: 'PIZZA BOX.jpg'
+    },
+    'big-mailer-brown': {
+        name: 'Big Mailer Box - Brown',
+        description: 'Secure, self-locking boxes designed for shipping larger items',
+        image: 'MAILER BOX.jpg'
+    },
+    'big-mailer-white': {
+        name: 'Big Mailer Box - White',
+        description: 'Secure, self-locking boxes designed for shipping larger items',
+        image: 'MAILER BOX.jpg'
+    },
+    'small-mailer-brown': {
+        name: 'Small Mailer Box - Brown',
+        description: 'Compact, self-locking boxes perfect for shipping smaller items',
+        image: 'MAILER BOX.jpg'
+    },
+    'small-mailer-white': {
+        name: 'Small Mailer Box - White',
+        description: 'Compact, self-locking boxes perfect for shipping smaller items',
+        image: 'MAILER BOX.jpg'
+    },
+    'big-mailer': {
+        name: 'Big Mailer Box',
+        description: 'Secure, self-locking boxes designed for shipping larger items',
+        image: 'MAILER BOX.jpg'
+    },
+    'small-mailer': {
+        name: 'Small Mailer Box',
+        description: 'Compact, self-locking boxes perfect for shipping smaller items',
+        image: 'MAILER BOX.jpg'
     },
     'mailer': {
         name: 'Mailer Box',
@@ -98,7 +137,7 @@ async function fetchProductsFromFirestore() {
                 category: data.category || data.type || '',
                 size: data.size || data.sizeName || '',
                 dimensions: formatDimensions(data.dimensions || data.size || ''),
-                material: data.material || DEFAULT_MATERIAL, // Default to B-Flute
+                material: data.material || getDefaultMaterial(), // Default to B-Flute
                 stock: data.stock || data.quantity || data.availableStock || 0,
                 image: data.image || data.imageUrl || '',
                 badge: data.badge || data.tag || '',
@@ -155,7 +194,7 @@ async function fetchProductsFromRealtimeDB() {
                                 category: item.category || item.type || item.product_type || '',
                                 size: item.size || item.sizeName || item.size_name || '',
                                 dimensions: formatDimensions(item.dimensions || item.size || item.dimension || ''),
-                                material: item.material || DEFAULT_MATERIAL, // Default to B-Flute
+                                material: item.material || getDefaultMaterial(), // Default to B-Flute
                                 stock: item.stock || item.quantity || item.availableStock || item.stock_quantity || 0,
                                 image: item.image || item.imageUrl || item.image_url || '',
                                 badge: item.badge || item.tag || item.label || '',
@@ -204,13 +243,48 @@ function formatDimensions(dimensions) {
 function determineCategory(product) {
     const name = (product.name || '').toLowerCase();
     const category = (product.category || '').toLowerCase();
+    const sku = (product.sku || product.id || '').toUpperCase();
     const searchText = name + ' ' + category;
     
+    // Check if it's a mailer box first and determine big/small and color based on SKU
+    if (sku.startsWith('MB')) {
+        // Check if it's a white variant (ends with W)
+        if (sku.endsWith('W') || sku.includes('W')) {
+            return 'big-mailer-white';
+        }
+        return 'big-mailer-brown';
+    }
+    // All NM codes are Small Mailer Box - check if white
+    if (sku.startsWith('NM')) {
+        // Check if it's a white variant (ends with W)
+        if (sku.endsWith('W') || sku.includes('W')) {
+            return 'small-mailer-white';
+        }
+        return 'small-mailer-brown';
+    }
+    
+    // Check other categories
     for (const [key, keywords] of Object.entries(CATEGORY_MAPPING)) {
+        // Skip mailer categories since we handled them above
+        if (key.includes('mailer')) continue;
+        
         const match = keywords.some(keyword => 
             searchText.includes(keyword.toLowerCase())
         );
         if (match) return key;
+    }
+    
+    // Fallback to general mailer if no specific match
+    const isMailer = searchText.includes('mailer') || searchText.includes('mb');
+    if (isMailer) {
+        // Try to determine big or small from SKU if available
+        if (sku && sku.startsWith('MB')) {
+            return sku.endsWith('W') ? 'big-mailer-white' : 'big-mailer-brown';
+        }
+        if (sku && sku.startsWith('NM')) {
+            return sku.endsWith('W') ? 'small-mailer-white' : 'small-mailer-brown';
+        }
+        return 'mailer'; // Fallback to general mailer
     }
     
     return null;
@@ -220,7 +294,13 @@ function determineCategory(product) {
 function groupProductsByCategory(products) {
     const grouped = {
         pizza: [],
-        mailer: [],
+        'big-mailer-brown': [],
+        'big-mailer-white': [],
+        'small-mailer-brown': [],
+        'small-mailer-white': [],
+        'big-mailer': [], // Fallback
+        'small-mailer': [], // Fallback
+        mailer: [], // Fallback
         rsc: [],
         document: []
     };
@@ -309,10 +389,10 @@ function renderCategory(categoryKey, categoryInfo, products) {
                     <table class="variants-table">
                         <thead>
                             <tr>
-                                <th>Size</th>
-                                <th>Dimensions</th>
-                                <th>Material</th>
-                                <th>Action</th>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th>Size Dimension</th>
+                                <th>Color</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -326,19 +406,56 @@ function renderCategory(categoryKey, categoryInfo, products) {
     });
 
     products.forEach((product, index) => {
+        const code = product.sku || product.id || 'N/A';
         const sizeName = product.size || product.name || 'N/A';
+        
+        // Determine description and color based on category
+        let description = sizeName;
+        let color = 'Brown';
+        
+        if (categoryKey === 'big-mailer-brown') {
+            description = 'Big Mailer Box';
+            color = 'Brown';
+        } else if (categoryKey === 'big-mailer-white') {
+            description = 'Big Mailer Box';
+            color = 'White';
+        } else if (categoryKey === 'small-mailer-brown') {
+            description = 'Small Mailer Box';
+            color = 'Brown';
+        } else if (categoryKey === 'small-mailer-white') {
+            description = 'Small Mailer Box';
+            color = 'White';
+        } else if (categoryKey === 'big-mailer') {
+            // Fallback
+            if (code.startsWith('MB') && code.includes('W')) {
+                description = 'Big Mailer Box';
+                color = 'White';
+            } else {
+                description = 'Big Mailer Box';
+                color = 'Brown';
+            }
+        } else if (categoryKey === 'small-mailer') {
+            // Fallback
+            if (code.startsWith('NM') && code.includes('W')) {
+                description = 'Small Mailer Box';
+                color = 'White';
+            } else {
+                description = 'Small Mailer Box';
+                color = 'Brown';
+            }
+        }
+        
         const dimensions = product.dimensions || 'N/A';
-        const material = product.material || DEFAULT_MATERIAL;
         const badge = product.badge ? `<span class="table-badge">${product.badge}</span>` : '';
         const highlightClass = product.highlight ? 'highlighted-row' : '';
         const productName = `${categoryInfo.name} - ${sizeName}`;
         
         html += `
             <tr class="${highlightClass}">
-                <td><strong>${sizeName}</strong> ${badge}</td>
-                <td>${dimensions}</td>
-                <td>${material}</td>
-                <td><button class="btn-table" onclick="showInquiry('${productName.replace(/'/g, "\\'")}')">Quote</button></td>
+                <td class="code-col"><strong>${code}</strong></td>
+                <td class="desc-col">${description} ${badge}</td>
+                <td class="size-col">${dimensions}</td>
+                <td class="color-col">${color}</td>
             </tr>
         `;
     });

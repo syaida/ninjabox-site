@@ -1,14 +1,19 @@
-// Firebase Configuration
-// Your web app's Firebase configuration
+// Firebase Configuration for ninjabox-site project
+// ⚠️ IMPORTANT: Update this config with your ninjabox-site project config
+// Get it from: https://console.firebase.google.com/project/ninjabox-site/settings/general
+// Scroll to "Your apps" section and copy the firebaseConfig
+
 const firebaseConfig = {
-    apiKey: "AIzaSyB0dSep0iQrFlE19HLXOviNrIFcorjlgzs",
-    authDomain: "stock-management-pro-86e06.firebaseapp.com",
-    databaseURL: "https://stock-management-pro-86e06-default-rtdb.firebaseio.com",
-    projectId: "stock-management-pro-86e06",
-    storageBucket: "stock-management-pro-86e06.firebasestorage.app",
-    messagingSenderId: "746752176338",
-    appId: "1:746752176338:web:44043e17cbb2175bf4bd0b",
-    measurementId: "G-T29E8R6138"
+    // ⬇️ REPLACE THESE VALUES WITH YOUR CONFIG FROM FIREBASE CONSOLE ⬇️
+    // Go to: https://console.firebase.google.com/project/ninjabox-site/settings/general
+    apiKey: "REPLACE_WITH_YOUR_API_KEY",                    // Get from Firebase Console
+    authDomain: "ninjabox-site.firebaseapp.com",            // Should be: ninjabox-site.firebaseapp.com
+    databaseURL: "",                                         // Optional for Firestore, can leave empty
+    projectId: "ninjabox-site",                             // Should be: ninjabox-site
+    storageBucket: "ninjabox-site.appspot.com",             // Should be: ninjabox-site.appspot.com
+    messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",       // Get from Firebase Console
+    appId: "REPLACE_WITH_YOUR_APP_ID",                      // Get from Firebase Console
+    measurementId: ""                                       // Optional, can leave empty
 };
 
 // Initialize Firebase when this script loads
@@ -41,13 +46,8 @@ if (typeof firebase !== 'undefined') {
 // Default material for ready stock
 const DEFAULT_MATERIAL = "B-Flute Corrugated";
 
-// Category mapping (map your stock categories to website categories)
-const CATEGORY_MAPPING = {
-    'pizza': ['Pizza Box', 'Pizza', 'PZ'],
-    'mailer': ['Mailer Box', 'Mailer', 'MB'],
-    'rsc': ['RSC Box', 'RSC', 'Regular Slotted'],
-    'document': ['Document Box', 'Document', 'Archive']
-};
+// Note: CATEGORY_MAPPING is declared in catalogue-loader.js to avoid duplicate declaration
+// If you need to access it, use the one from catalogue-loader.js
 
 // Fetch products from Firebase
 async function fetchProductsFromFirebase() {
@@ -139,7 +139,13 @@ function groupProductsByCategory(products) {
 }
 
 // Determine category from product data
+// Note: Uses CATEGORY_MAPPING from catalogue-loader.js if available
 function determineCategory(product) {
+    // Check if CATEGORY_MAPPING is available (from catalogue-loader.js)
+    if (typeof CATEGORY_MAPPING === 'undefined') {
+        return null;
+    }
+    
     const name = (product.name || '').toLowerCase();
     const category = (product.category || '').toLowerCase();
     

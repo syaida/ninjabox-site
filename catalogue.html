@@ -66,11 +66,16 @@
         .page-number-footer {
             position: absolute;
             bottom: 25px;
-            width: 100%;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
             font-size: 10pt;
             color: #888;
-            z-index: 10;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         /* --- COVER PAGE STYLES --- */
@@ -127,7 +132,7 @@
         /* Dynamic Image Showcase */
         .cover-showcase {
             position: absolute;
-            top: 45%;
+            top: 48%;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -139,7 +144,7 @@
         }
         .showcase-item {
             position: absolute;
-            width: 220px;
+            width: 280px;
             height: auto;
             border-radius: 12px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
@@ -148,9 +153,9 @@
             padding: 10px;
         }
         .img-pos-1 { z-index: 3; transform: translateX(0) scale(1.1); } 
-        .img-pos-2 { z-index: 2; transform: translateX(-160px) translateY(30px) rotate(-10deg); }
-        .img-pos-3 { z-index: 2; transform: translateX(160px) translateY(30px) rotate(10deg); } 
-        .img-pos-4 { z-index: 1; transform: translateX(0) translateY(140px) scale(0.9); opacity: 0.8; } 
+        .img-pos-2 { z-index: 2; transform: translateX(-200px) translateY(30px) rotate(-10deg); }
+        .img-pos-3 { z-index: 2; transform: translateX(200px) translateY(30px) rotate(10deg); } 
+        .img-pos-4 { z-index: 1; transform: translateX(0) translateY(170px) scale(1.1); opacity: 0.9; } 
 
         .cover-footer-text {
             position: absolute;
@@ -166,6 +171,28 @@
             text-align: center;
             margin-top: 20px;
             margin-bottom: 30px;
+        }
+        .cover-date-info {
+            position: absolute;
+            bottom: 25px;
+            right: 40px;
+            font-size: 9pt;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 15;
+        }
+        .cover-registration-info {
+            position: absolute;
+            bottom: 25px;
+            left: 40px;
+            font-size: 9pt;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 15;
         }
         .company-name {
             font-size: 18pt;
@@ -213,15 +240,18 @@
         }
         .product-table tr { border-bottom: 1px solid #eee; background: white; }
         .product-table tr:nth-child(even) { background-color: var(--accent-color); }
-        .product-table td.code-col { font-weight: 700; color: var(--primary-color); width: 15%; }
-        .product-table td.desc-col { width: 55%; font-weight: 500; }
-        .product-table td.cat-col { width: 30%; font-style: italic; color: #777; }
+        .product-table td.code-col { font-weight: 700; color: var(--primary-color); width: 12%; }
+        .product-table td.desc-col { width: 38%; font-weight: 500; }
+        .product-table td.size-col { width: 30%; font-weight: 400; color: #555; }
+        .product-table td.color-col { width: 20%; font-weight: 400; color: #555; }
 
         /* --- Back Cover Styles --- */
         .back-cover-content {
-            height: 100%;
+            height: calc(100% - 70px);
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            background: #fcfcfc;
+            background: transparent;
+            padding: 30px 40px;
+            padding-bottom: 10px;
         }
         .back-title { font-size: 32pt; color: var(--primary-color); font-weight: 800; margin-bottom: 30px; text-transform: uppercase; }
         .contact-box {
@@ -235,6 +265,64 @@
         .contact-info strong { color: var(--secondary-color); font-weight: 700; }
         .back-footer-bar {
             position: absolute; bottom: 0; width: 100%; height: 25px; background-color: var(--primary-color);
+        }
+
+        /* --- Table of Contents Styles --- */
+        .toc-page {
+            background: white;
+        }
+        .toc-content {
+            padding: 60px 50px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .toc-title {
+            font-size: 36pt;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 2px solid #eee;
+            font-size: 14pt;
+            color: #333;
+        }
+        .toc-item-name {
+            font-weight: 600;
+            flex: 0 0 auto;
+        }
+        .toc-item-dots {
+            flex: 1 1 auto;
+            border-bottom: 2px dotted #666;
+            margin: 0 15px;
+            height: 0;
+            align-self: center;
+            min-width: 20px;
+        }
+        .toc-item-page {
+            font-weight: 700;
+            color: var(--primary-color);
+            flex: 0 0 auto;
+            text-align: right;
+        }
+        .toc-item:hover {
+            background-color: var(--accent-color);
+            margin: 0 -20px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
     </style>
 </head>
@@ -259,161 +347,82 @@
              <img src="PIZZA BOX.jpg" class="showcase-item img-pos-1" alt="Pizza Box">
         </div>
 
-        <div class="cover-footer-text">
-            Durable. Reliable. Professional.
-        </div>
 
         <div class="cover-company-info">
             <div class="company-name">NINJABOX SDN BHD</div>
             <div class="company-registration">(1362221-U)</div>
-            <div class="catalogue-date" style="font-size: 10pt; color: rgba(255, 255, 255, 0.85); font-weight: 400; letter-spacing: 0.5px; text-align: center; margin-top: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Created: 18/12/2025</div>
         </div>
 
-        <div class="page-number-footer">Page 1 of 8</div>
+        <div class="cover-registration-info">
+            Registration: (1362221-U)
+        </div>
+
+        <div class="cover-date-info">
+            Created: 18/12/2025
+        </div>
+
+        <div class="page-number-footer">
+            <div>Page 1 of 14</div>
+        </div>
     </div>
 
-    <div class="page">
+    <div class="page toc-page">
         <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
         <div class="page-content-wrapper">
-            <div class="header-banner">
-                <h1 class="header-title">PIZZA BOX</h1>
-                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
-            </div>
-            <div class="content-container">
-                <div class="section-intro">
-                    <div class="section-image"><img src="PIZZA BOX.jpg" alt="Pizza Box"></div>
-                    <div class="section-details">
-                        <h2>Pizza Box</h2>
-                        <p>Heat-resistant and durable corrugated boxes, perfect for keeping pizzas fresh. Available in various sizes.</p>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="product-table">
-                        <thead><tr><th>Code</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td class="code-col">PZ01</td><td class="desc-col">Pizza Box 8'' (208 x 208 x 38 mm)</td></tr>
-                            <tr><td class="code-col">PZ02</td><td class="desc-col">Pizza Box 10'' (260 x 260 x 40 mm)</td></tr>
-                            <tr><td class="code-col">PZ03</td><td class="desc-col">Pizza Box 12'' (310 x 310 x 46 mm)</td></tr>
-                            <tr><td class="code-col">PZ04</td><td class="desc-col">Pizza Box 7'' (183 x 183 x 40 mm)</td></tr>
-                            <tr><td class="code-col">PZ05</td><td class="desc-col">Pizza Box 9'' (235 x 235 x 40 mm)</td></tr>
-                            <tr><td class="code-col">PZ06</td><td class="desc-col">Pizza Box 11'' (290 x 290 x 46 mm)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="page-number-footer">Page 2 of 8</div>
-    </div>
-
-    <div class="page">
-        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
-        <div class="page-content-wrapper">
-            <div class="header-banner">
-                <h1 class="header-title">DOCUMENT BOX</h1>
-                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
-            </div>
-            <div class="content-container">
-                <div class="section-intro">
-                    <div class="section-image"><img src="DOCUMENT BOX.jpg" alt="Document Box"></div>
-                    <div class="section-details">
-                        <h2>Document Box</h2>
-                        <p>Ideal for archiving files and records. Features convenient hand-hold cutouts for easy lifting and carrying.</p>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="product-table">
-                        <thead><tr><th>Code</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td class="code-col">DB1</td><td class="desc-col">Document Box (350 x 250 x 260 mm)</td></tr>
-                            <tr><td class="code-col">DB2</td><td class="desc-col">Document Box (410 x 320 x 295 mm)</td></tr>
-                            <tr><td class="code-col">DB3</td><td class="desc-col">Document Box (457 x 368 x 305 mm)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="toc-content">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    <li class="toc-item">
+                        <span class="toc-item-name">RSC Box</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 3-4</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Pizza Box</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 5</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Non Square Pizza Box</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 6</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Big Mailer Box - Brown</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 7</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Small Mailer Box - Brown</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 8-9</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Big Mailer Box - White</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 10</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Small Mailer Box - White</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 11</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Color Mailer Box</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 12</span>
+                    </li>
+                    <li class="toc-item">
+                        <span class="toc-item-name">Document Box</span>
+                        <span class="toc-item-dots"></span>
+                        <span class="toc-item-page">Page 13</span>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="page-number-footer">Page 3 of 8</div>
-    </div>
-
-    <div class="page">
-        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
-        <div class="page-content-wrapper">
-            <div class="header-banner">
-                <h1 class="header-title">MAILER BOX (1/2)</h1>
-                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
-            </div>
-            <div class="content-container">
-                <div class="section-intro">
-                    <div class="section-image"><img src="MAILER BOX.jpg" alt="Mailer Box"></div>
-                    <div class="section-details">
-                        <h2>E-Commerce Solutions</h2>
-                        <p>Secure, self-locking boxes designed for shipping. Provides excellent protection and a professional presentation for your products.</p>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="product-table">
-                        <thead><tr><th>Code</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td class="code-col">MBA</td><td class="desc-col">Mailer Box (240 x 190 x 65 mm)</td></tr>
-                            <tr><td class="code-col">MBB</td><td class="desc-col">Mailer Box (330 x 240 x 85 mm)</td></tr>
-                            <tr><td class="code-col">MBC</td><td class="desc-col">Mailer Box (620 x 510 x 135 mm)</td></tr>
-                            <tr><td class="code-col">MBD</td><td class="desc-col">Mailer Box (230 x 150 x 55 mm)</td></tr>
-                            <tr><td class="code-col">MBE</td><td class="desc-col">Mailer Box (255 x 210 x 65 mm)</td></tr>
-                            <tr><td class="code-col">MBF</td><td class="desc-col">Mailer Box (294 x 212 x 58 mm)</td></tr>
-                            <tr><td class="code-col">MBG</td><td class="desc-col">Mailer Box (290 x 245 x 160 mm)</td></tr>
-                            <tr><td class="code-col">MBH</td><td class="desc-col">Mailer Box (460 x 300 x 140 mm)</td></tr>
-                            <tr><td class="code-col">NM1</td><td class="desc-col">Mailer Box (150 x 150 x 50 mm)</td></tr>
-                            <tr><td class="code-col">NM10</td><td class="desc-col">Mailer Box (180 x 80 x 60 mm)</td></tr>
-                            <tr><td class="code-col">NM11</td><td class="desc-col">Mailer Box (180 x 180 x 60 mm)</td></tr>
-                            <tr><td class="code-col">NM12</td><td class="desc-col">Mailer Box (230 x 155 x 54 mm)</td></tr>
-                            <tr><td class="code-col">NM13</td><td class="desc-col">Mailer Box (290 x 190 x 60 mm)</td></tr>
-                            <tr><td class="code-col">NM14</td><td class="desc-col">Mailer Box (294 x 212 x 61 mm)</td></tr>
-                            <tr><td class="code-col">NM15</td><td class="desc-col">Mailer Box (265 x 210 x 70 mm)</td></tr>
-                            <tr><td class="code-col">NM16</td><td class="desc-col">Mailer Box (220 x 150 x 70 mm)</td></tr>
-                            <tr><td class="code-col">NM17</td><td class="desc-col">Mailer Box (290 x 120 x 110 mm)</td></tr>
-                            <tr><td class="code-col">NM18</td><td class="desc-col">Mailer Box (275 x 200 x 105 mm)</td></tr>
-                            <tr><td class="code-col">NM19</td><td class="desc-col">Mailer Box (265 x 210 x 120 mm)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="page-number-footer">
+            <div>Page 2 of 14</div>
         </div>
-        <div class="page-number-footer">Page 4 of 8</div>
-    </div>
-
-    <div class="page">
-        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
-        <div class="page-content-wrapper">
-            <div class="header-banner">
-                <h1 class="header-title">MAILER BOX (2/2)</h1>
-                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
-            </div>
-            <div class="content-container">
-                <div class="table-container">
-                    <table class="product-table">
-                        <thead><tr><th>Code</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td class="code-col">NM2</td><td class="desc-col">Mailer Box (180 x 100 x 60 mm)</td></tr>
-                            <tr><td class="code-col">NM20</td><td class="desc-col">Mailer Box (332 x 234 x 113 mm)</td></tr>
-                            <tr><td class="code-col">NM21</td><td class="desc-col">Mailer Box (452 x 338 x 70 mm)</td></tr>
-                            <tr><td class="code-col">NM3</td><td class="desc-col">Mailer Box (200 x 140 x 40 mm)</td></tr>
-                            <tr><td class="code-col">NM4</td><td class="desc-col">Mailer Box (250 x 250 x 60 mm)</td></tr>
-                            <tr><td class="code-col">NM5</td><td class="desc-col">Mailer Box (250 x 200 x 70 mm)</td></tr>
-                            <tr><td class="code-col">NM6</td><td class="desc-col">Mailer Box (270 x 170 x 50 mm)</td></tr>
-                            <tr><td class="code-col">NM7</td><td class="desc-col">Mailer Box (300 x 220 x 50 mm)</td></tr>
-                            <tr><td class="code-col">NM8</td><td class="desc-col">Mailer Box (300 x 300 x 80 mm)</td></tr>
-                            <tr><td class="code-col">NM9</td><td class="desc-col">Mailer Box (360 x 300 x 70 mm)</td></tr>
-                            <tr><td class="code-col">MBAW</td><td class="desc-col">White Mailer Box (240 x 190 x 65 mm)</td></tr>
-                            <tr><td class="code-col">MBBW</td><td class="desc-col">White Mailer Box (330 x 240 x 85 mm)</td></tr>
-                            <tr><td class="code-col">MBDW</td><td class="desc-col">White Mailer Box (230 x 150 x 55 mm)</td></tr>
-                            <tr><td class="code-col">MBEW</td><td class="desc-col">White Mailer Box (255 x 210 x 65 mm)</td></tr>
-                            <tr><td class="code-col">MBFW</td><td class="desc-col">White Mailer Box (294 x 212 x 58 mm)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="page-number-footer">Page 5 of 8</div>
     </div>
 
     <div class="page">
@@ -433,32 +442,26 @@
                 </div>
                 <div class="table-container">
                     <table class="product-table">
-                        <thead><tr><th>Code</th><th>Description</th></tr></thead>
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
                         <tbody>
-                            <tr><td class="code-col">R01</td><td class="desc-col">Carton Box (150 x 100 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R02</td><td class="desc-col">Carton Box (150 x 150 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R03</td><td class="desc-col">Carton Box (200 x 100 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R04</td><td class="desc-col">Carton Box (200 x 200 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R05</td><td class="desc-col">Carton Box (250 x 150 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R06</td><td class="desc-col">Carton Box (250 x 250 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R07</td><td class="desc-col">Carton Box (300 x 200 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R08</td><td class="desc-col">Carton Box (300 x 300 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R09</td><td class="desc-col">Carton Box (250 x 200 x 200 mm)</td></tr>
-                            <tr><td class="code-col">R10</td><td class="desc-col">Carton Box (300 x 200 x 200 mm)</td></tr>
-                            <tr><td class="code-col">R11</td><td class="desc-col">Carton Box (300 x 300 x 200 mm)</td></tr>
-                            <tr><td class="code-col">R12</td><td class="desc-col">Carton Box (350 x 250 x 200 mm)</td></tr>
-                            <tr><td class="code-col">R13</td><td class="desc-col">Carton Box (400 x 300 x 200 mm)</td></tr>
-                            <tr><td class="code-col">R14</td><td class="desc-col">Carton Box (400 x 400 x 200 mm)</td></tr>
-                            <tr><td class="code-col">R15</td><td class="desc-col">Carton Box (150 x 100 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R16</td><td class="desc-col">Carton Box (150 x 150 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R17</td><td class="desc-col">Carton Box (200 x 100 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R18</td><td class="desc-col">Carton Box (200 x 200 x 100 mm)</td></tr>
+                            <tr><td class="code-col">R09</td><td class="desc-col">Carton Box</td><td class="size-col">250 x 200 x 200 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R10</td><td class="desc-col">Carton Box</td><td class="size-col">300 x 200 x 200 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R11</td><td class="desc-col">Carton Box</td><td class="size-col">300 x 300 x 200 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R12</td><td class="desc-col">Carton Box</td><td class="size-col">350 x 250 x 200 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R13</td><td class="desc-col">Carton Box</td><td class="size-col">400 x 300 x 200 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R14</td><td class="desc-col">Carton Box</td><td class="size-col">400 x 400 x 200 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R15</td><td class="desc-col">Carton Box</td><td class="size-col">150 x 100 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R16</td><td class="desc-col">Carton Box</td><td class="size-col">150 x 150 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R17</td><td class="desc-col">Carton Box</td><td class="size-col">200 x 100 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R18</td><td class="desc-col">Carton Box</td><td class="size-col">200 x 200 x 100 mm</td><td class="color-col">Brown</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="page-number-footer">Page 6 of 8</div>
+        <div class="page-number-footer">
+            <div>Page 3 of 14</div>
+        </div>
     </div>
 
     <div class="page">
@@ -471,62 +474,403 @@
             <div class="content-container">
                 <div class="table-container">
                     <table class="product-table">
-                        <thead><tr><th>Code</th><th>Description</th></tr></thead>
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
                         <tbody>
-                            <tr><td class="code-col">R19</td><td class="desc-col">Carton Box (250 x 150 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R20</td><td class="desc-col">Carton Box (250 x 250 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R21</td><td class="desc-col">Carton Box (300 x 200 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R22</td><td class="desc-col">Carton Box (300 x 300 x 100 mm)</td></tr>
-                            <tr><td class="code-col">R23</td><td class="desc-col">Carton Box (200 x 150 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R24</td><td class="desc-col">Carton Box (250 x 150 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R25</td><td class="desc-col">Carton Box (250 x 250 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R26</td><td class="desc-col">Carton Box (300 x 200 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R27</td><td class="desc-col">Carton Box (300 x 300 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R28</td><td class="desc-col">Carton Box (350 x 250 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R29</td><td class="desc-col">Carton Box (350 x 350 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R30</td><td class="desc-col">Carton Box (400 x 300 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R31</td><td class="desc-col">Carton Box (400 x 400 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R32</td><td class="desc-col">Carton Box (450 x 350 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R33</td><td class="desc-col">Carton Box (500 x 400 x 150 mm)</td></tr>
-                            <tr><td class="code-col">R34</td><td class="desc-col">Carton Box (350 x 250 x 250 mm)</td></tr>
-                            <tr><td class="code-col">R35</td><td class="desc-col">Carton Box (350 x 350 x 250 mm)</td></tr>
-                            <tr><td class="code-col">R36</td><td class="desc-col">Carton Box (400 x 300 x 250 mm)</td></tr>
-                            <tr><td class="code-col">R37</td><td class="desc-col">Carton Box (400 x 400 x 250 mm)</td></tr>
-                            <tr><td class="code-col">R38</td><td class="desc-col">Carton Box (450 x 350 x 250 mm)</td></tr>
-                            <tr><td class="code-col">R39</td><td class="desc-col">Carton Box (500 x 400 x 250 mm)</td></tr>
+                            <tr><td class="code-col">R19</td><td class="desc-col">Carton Box</td><td class="size-col">250 x 150 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R20</td><td class="desc-col">Carton Box</td><td class="size-col">250 x 250 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R21</td><td class="desc-col">Carton Box</td><td class="size-col">300 x 200 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R22</td><td class="desc-col">Carton Box</td><td class="size-col">300 x 300 x 100 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R23</td><td class="desc-col">Carton Box</td><td class="size-col">200 x 150 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R24</td><td class="desc-col">Carton Box</td><td class="size-col">250 x 150 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R25</td><td class="desc-col">Carton Box</td><td class="size-col">250 x 250 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R26</td><td class="desc-col">Carton Box</td><td class="size-col">300 x 200 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R27</td><td class="desc-col">Carton Box</td><td class="size-col">300 x 300 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R28</td><td class="desc-col">Carton Box</td><td class="size-col">350 x 250 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R29</td><td class="desc-col">Carton Box</td><td class="size-col">350 x 350 x 150 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">R30</td><td class="desc-col">Carton Box</td><td class="size-col">400 x 300 x 150 mm</td><td class="color-col">Brown</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="page-number-footer">Page 7 of 8</div>
+        <div class="page-number-footer">
+            <div>Page 4 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">PIZZA BOX</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="PIZZA BOX.jpg" alt="Pizza Box"></div>
+                    <div class="section-details">
+                        <h2>Pizza Box</h2>
+                        <p>Heat-resistant and durable corrugated boxes, perfect for keeping pizzas fresh. Available in various sizes.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">PZ01</td><td class="desc-col">Pizza Box 8''</td><td class="size-col">208 x 208 x 38 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">PZ02</td><td class="desc-col">Pizza Box 10''</td><td class="size-col">260 x 260 x 40 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">PZ03</td><td class="desc-col">Pizza Box 12''</td><td class="size-col">310 x 310 x 46 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">PZ04</td><td class="desc-col">Pizza Box 7''</td><td class="size-col">183 x 183 x 40 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">PZ05</td><td class="desc-col">Pizza Box 9''</td><td class="size-col">235 x 235 x 40 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">PZ06</td><td class="desc-col">Pizza Box 11''</td><td class="size-col">290 x 290 x 46 mm</td><td class="color-col">Brown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 5 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">NON SQUARE PIZZA BOX</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="SPECIAL PIZZA BOX.png" alt="Non Square Pizza Box"></div>
+                    <div class="section-details">
+                        <h2>Non Square Pizza Box</h2>
+                        <p>Octagonal pizza boxes with unique design. Heat-resistant and durable corrugated boxes with 3mm wall thickness (B-Flute), perfect for keeping pizzas fresh.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">SPZ01</td><td class="desc-col">Non Square Pizza Box 10''</td><td class="size-col">260 x 255 x 45 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">SPZ02</td><td class="desc-col">Non Square Pizza Box 12''</td><td class="size-col">311 x 306 x 45 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">SPZ03</td><td class="desc-col">Non Square Pizza Box 14''</td><td class="size-col">362 x 357 x 45 mm</td><td class="color-col">Brown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 6 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">BIG MAILER BOX - BROWN</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="MAILER BOX.jpg" alt="Big Mailer Box Brown"></div>
+                    <div class="section-details">
+                        <h2>Big Mailer Box - Brown</h2>
+                        <p>Secure, self-locking boxes designed for shipping larger items. Provides excellent protection and a professional presentation for your products.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">MBA</td><td class="desc-col">Big Mailer Box</td><td class="size-col">240 x 190 x 65 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBB</td><td class="desc-col">Big Mailer Box</td><td class="size-col">330 x 240 x 85 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBC</td><td class="desc-col">Big Mailer Box</td><td class="size-col">620 x 510 x 135 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBD</td><td class="desc-col">Big Mailer Box</td><td class="size-col">230 x 150 x 55 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBE</td><td class="desc-col">Big Mailer Box</td><td class="size-col">255 x 210 x 65 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBF</td><td class="desc-col">Big Mailer Box</td><td class="size-col">294 x 212 x 58 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBG</td><td class="desc-col">Big Mailer Box</td><td class="size-col">290 x 245 x 160 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">MBH</td><td class="desc-col">Big Mailer Box</td><td class="size-col">460 x 300 x 140 mm</td><td class="color-col">Brown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 7 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">SMALL MAILER BOX - BROWN (1/2)</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="MAILER BOX.jpg" alt="Small Mailer Box Brown"></div>
+                    <div class="section-details">
+                        <h2>Small Mailer Box - Brown</h2>
+                        <p>Compact, self-locking boxes perfect for shipping smaller items. Provides excellent protection and a professional presentation for your products.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">NM1</td><td class="desc-col">Small Mailer Box</td><td class="size-col">150 x 150 x 50 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM2</td><td class="desc-col">Small Mailer Box</td><td class="size-col">180 x 100 x 60 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM3</td><td class="desc-col">Small Mailer Box</td><td class="size-col">200 x 140 x 40 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM4</td><td class="desc-col">Small Mailer Box</td><td class="size-col">250 x 250 x 60 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM5</td><td class="desc-col">Small Mailer Box</td><td class="size-col">250 x 200 x 70 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM6</td><td class="desc-col">Small Mailer Box</td><td class="size-col">270 x 170 x 50 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM7</td><td class="desc-col">Small Mailer Box</td><td class="size-col">300 x 220 x 50 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM8</td><td class="desc-col">Small Mailer Box</td><td class="size-col">300 x 300 x 80 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM9</td><td class="desc-col">Small Mailer Box</td><td class="size-col">360 x 300 x 70 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM10</td><td class="desc-col">Small Mailer Box</td><td class="size-col">180 x 80 x 60 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM11</td><td class="desc-col">Small Mailer Box</td><td class="size-col">180 x 180 x 60 mm</td><td class="color-col">Brown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 8 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">SMALL MAILER BOX - BROWN (2/2)</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">NM12</td><td class="desc-col">Small Mailer Box</td><td class="size-col">230 x 155 x 54 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM13</td><td class="desc-col">Small Mailer Box</td><td class="size-col">290 x 190 x 60 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM14</td><td class="desc-col">Small Mailer Box</td><td class="size-col">294 x 212 x 61 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM15</td><td class="desc-col">Small Mailer Box</td><td class="size-col">265 x 210 x 70 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM16</td><td class="desc-col">Small Mailer Box</td><td class="size-col">220 x 150 x 70 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM17</td><td class="desc-col">Small Mailer Box</td><td class="size-col">290 x 120 x 110 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM18</td><td class="desc-col">Small Mailer Box</td><td class="size-col">275 x 200 x 105 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM19</td><td class="desc-col">Small Mailer Box</td><td class="size-col">265 x 210 x 120 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM20</td><td class="desc-col">Small Mailer Box</td><td class="size-col">332 x 234 x 113 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">NM21</td><td class="desc-col">Small Mailer Box</td><td class="size-col">452 x 338 x 70 mm</td><td class="color-col">Brown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 9 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">BIG MAILER BOX - WHITE</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="WHITE MAILER BOX.jpg" alt="Big Mailer Box White"></div>
+                    <div class="section-details">
+                        <h2>Big Mailer Box - White</h2>
+                        <p>Secure, self-locking boxes designed for shipping larger items. Provides excellent protection and a professional presentation for your products.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">MBAW</td><td class="desc-col">Big Mailer Box</td><td class="size-col">240 x 190 x 65 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">MBBW</td><td class="desc-col">Big Mailer Box</td><td class="size-col">330 x 240 x 85 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">MBDW</td><td class="desc-col">Big Mailer Box</td><td class="size-col">230 x 150 x 55 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">MBEW</td><td class="desc-col">Big Mailer Box</td><td class="size-col">255 x 210 x 65 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">MBFW</td><td class="desc-col">Big Mailer Box</td><td class="size-col">294 x 212 x 58 mm</td><td class="color-col">White</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 10 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">SMALL MAILER BOX - WHITE</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="WHITE MAILER BOX.jpg" alt="Small Mailer Box White"></div>
+                    <div class="section-details">
+                        <h2>Small Mailer Box - White</h2>
+                        <p>Compact, self-locking boxes perfect for shipping smaller items. Provides excellent protection and a professional presentation for your products.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">NM1W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">150 x 150 x 50 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM2W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">180 x 100 x 60 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM3W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">200 x 140 x 40 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM4W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">250 x 250 x 60 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM5W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">250 x 200 x 70 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM6W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">270 x 170 x 55 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM7W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">300 x 220 x 50 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM8W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">300 x 300 x 80 mm</td><td class="color-col">White</td></tr>
+                            <tr><td class="code-col">NM9W</td><td class="desc-col">Small Mailer Box</td><td class="size-col">360 x 300 x 70 mm</td><td class="color-col">White</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 11 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">COLOR MAILER BOX</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="COLOR MAILER BOX.png" alt="Color Mailer Box"></div>
+                    <div class="section-details">
+                        <h2>Color Mailer Box</h2>
+                        <p>Vibrant colored mailer boxes available in green, purple, and red. Perfect for adding a pop of color to your packaging while maintaining excellent protection for your products.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">NM1P</td><td class="desc-col">Color Mailer Box</td><td class="size-col">150 x 150 x 50 mm</td><td class="color-col">Purple</td></tr>
+                            <tr><td class="code-col">NM3R</td><td class="desc-col">Color Mailer Box</td><td class="size-col">200 x 140 x 40 mm</td><td class="color-col">Red</td></tr>
+                            <tr><td class="code-col">NM7G</td><td class="desc-col">Color Mailer Box</td><td class="size-col">300 x 220 x 50 mm</td><td class="color-col">Green</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 12 of 14</div>
+        </div>
+    </div>
+
+    <div class="page">
+        <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
+        <div class="page-content-wrapper">
+            <div class="header-banner">
+                <h1 class="header-title">DOCUMENT BOX</h1>
+                <img src="LOGO-NINJABOX1.png" alt="NinjaBox" class="header-logo-small">
+            </div>
+            <div class="content-container">
+                <div class="section-intro">
+                    <div class="section-image"><img src="DOCUMENT BOX.jpg" alt="Document Box"></div>
+                    <div class="section-details">
+                        <h2>Document Box</h2>
+                        <p>Ideal for archiving files and records. Features convenient hand-hold cutouts for easy lifting and carrying.</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="product-table">
+                        <thead><tr><th>Code</th><th>Description</th><th>Size Dimension</th><th>Color</th></tr></thead>
+                        <tbody>
+                            <tr><td class="code-col">DB1</td><td class="desc-col">Document Box</td><td class="size-col">350 x 250 x 260 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">DB2</td><td class="desc-col">Document Box</td><td class="size-col">410 x 320 x 295 mm</td><td class="color-col">Brown</td></tr>
+                            <tr><td class="code-col">DB3</td><td class="desc-col">Document Box</td><td class="size-col">457 x 368 x 305 mm</td><td class="color-col">Brown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="page-number-footer">
+            <div>Page 13 of 14</div>
+        </div>
     </div>
 
     <div class="page">
         <img src="LOGO-NINJABOX1.png" alt="watermark" class="watermark">
         
         <div class="page-content-wrapper back-cover-content">
-            <img src="LOGO-NINJABOX1.png" alt="NinjaBox Logo" style="width: 140px; margin-bottom: 40px;">
-            <div class="back-title">GET IN TOUCH</div>
+            <img src="LOGO-NINJABOX1.png" alt="NinjaBox Logo" style="width: 100px; margin-bottom: 15px;">
+            <div class="back-title" style="font-size: 32pt; margin-bottom: 15px; font-weight: 800;">GET IN TOUCH</div>
             
-            <div class="contact-box">
+            <div class="contact-box" style="padding: 30px 35px; margin-bottom: 20px;">
                 <div class="contact-info">
-                    <p><strong>Phone / WhatsApp</strong><br>017-228 9028</p>
-                    <br>
-                    <p><strong>Email</strong><br>enquiry@ninjabox.my</p>
-                    <br>
-                    <p><strong>Address</strong><br>Lot 2210, Jalan Kasawari,<br>Kampung Batu 9 Kebun Baru,<br>42500 Telok Panglima Garang, Selangor</p>
+                    <p style="font-size: 13pt; line-height: 1.8;"><strong style="font-size: 14pt;">Phone / WhatsApp</strong><br>017-228 9028</p>
+                    <p style="font-size: 13pt; margin-top: 12px; line-height: 1.8;"><strong style="font-size: 14pt;">Email</strong><br>enquiry@ninjabox.my</p>
+                    <p style="font-size: 13pt; margin-top: 12px; line-height: 1.8;"><strong style="font-size: 14pt;">Address</strong><br>Lot 2210, Jalan Kasawari,<br>Kampung Batu 9 Kebun Baru,<br>42500 Telok Panglima Garang, Selangor</p>
                 </div>
             </div>
 
-            <div style="margin-top: 50px;">
-                <p style="font-size: 16pt; color: var(--primary-color); font-weight: 600; margin-bottom: 10px;">Also Available:</p>
-                <p style="font-size: 14pt; color: #555;">Custom Sizes & Custom Printing Services</p>
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+                <p style="font-size: 16pt; color: var(--primary-color); font-weight: 700; margin-bottom: 8px;">Also Available:</p>
+                <ul style="font-size: 13pt; color: #555; list-style-type: disc; text-align: left; display: inline-block; margin: 0; padding-left: 25px; line-height: 1.8;">
+                    <li>Custom Size</li>
+                    <li>Custom Printing</li>
+                </ul>
             </div>
 
-            <div class="back-footer-bar"></div>
+            <div style="margin-top: 15px; margin-bottom: 60px;">
+                <p style="font-size: 16pt; color: var(--primary-color); font-weight: 700; margin-bottom: 15px;">Connect With Us:</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 35px; width: 100%;">
+                    <div style="text-align: center;">
+                        <div style="margin-bottom: 8px;">
+                            <svg style="width: 32px; height: 32px; fill: #E8761B; display: block; margin: 0 auto;" viewBox="0 0 24 24">
+                                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM18.92 8h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+                            </svg>
+                        </div>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://ninjabox.my/" alt="Website QR Code" style="width: 110px; height: 110px; border: 2px solid #ddd; padding: 4px; background: white; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+                        <p style="font-size: 12pt; color: #555; margin: 5px 0 0 0; font-weight: 700;">Website</p>
+                        <a href="https://ninjabox.my/" target="_blank" style="font-size: 10pt; color: var(--primary-color); text-decoration: none; display: block; margin-top: 3px; font-weight: 500;">ninjabox.my</a>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="margin-bottom: 8px;">
+                            <svg style="width: 32px; height: 32px; fill: #1877F2; display: block; margin: 0 auto;" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </div>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://www.facebook.com/ninjabox/" alt="Facebook QR Code" style="width: 110px; height: 110px; border: 2px solid #ddd; padding: 4px; background: white; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+                        <p style="font-size: 12pt; color: #555; margin: 5px 0 0 0; font-weight: 700;">Facebook</p>
+                        <a href="https://www.facebook.com/ninjabox/" target="_blank" style="font-size: 10pt; color: var(--primary-color); text-decoration: none; display: block; margin-top: 3px; font-weight: 500;">@ninjabox</a>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="margin-bottom: 8px;">
+                            <img src="shopee-icon.png" alt="Shopee" style="width: 32px; height: 32px; display: block; margin: 0 auto;">
+                        </div>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://shopee.com.my/ninja_box" alt="Shopee QR Code" style="width: 110px; height: 110px; border: 2px solid #ddd; padding: 4px; background: white; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+                        <p style="font-size: 12pt; color: #555; margin: 5px 0 0 0; font-weight: 700;">Shopee</p>
+                        <a href="https://shopee.com.my/ninja_box" target="_blank" style="font-size: 10pt; color: var(--primary-color); text-decoration: none; display: block; margin-top: 3px; font-weight: 500;">ninja_box</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="page-number-footer">Page 8 of 8</div>
+        <div class="page-number-footer" style="bottom: 10px;">
+            <div>Page 14 of 14</div>
+            <div style="font-size: 9pt; color: #888; margin-top: 5px;">Created: 18/12/2025</div>
+        </div>
     </div>
 
 </body>
