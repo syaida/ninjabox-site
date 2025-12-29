@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // TEST MODE - Allow all reads and writes for testing
+    // ⚠️ WARNING: This is for testing only! Use firestore.rules for production.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
