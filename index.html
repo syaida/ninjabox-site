@@ -15,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js Library for 3D Box Simulation -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
     <!-- jsPDF Library for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Firebase SDK -->
@@ -42,6 +44,7 @@
                     <li><a href="#about" class="nav-link">About</a></li>
                     <li><a href="#services" class="nav-link">Services</a></li>
                     <li><a href="#catalogue" class="nav-link">Catalogue</a></li>
+                    <li><a href="#box-simulator" class="nav-link">3D Simulator</a></li>
                     <li><a href="#faq" class="nav-link">FAQ</a></li>
                     <li><a href="#reviews" class="nav-link">Reviews</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
@@ -815,6 +818,86 @@
         </div>
     </section>
 
+    <!-- 3D Box Simulator Section -->
+    <section id="box-simulator" class="box-simulator">
+        <div class="container">
+            <div class="section-header">
+                <h2>3D Box Simulator</h2>
+                <p>Enter your dimensions and see how your custom box will look in 3D</p>
+            </div>
+            <div class="simulator-content">
+                <div class="simulator-controls">
+                    <div class="control-panel">
+                        <h3>Box Dimensions</h3>
+                        <div class="dimension-inputs">
+                            <div class="input-group">
+                                <label for="boxLength">
+                                    <i class="fas fa-ruler-horizontal"></i> Length (cm)
+                                </label>
+                                <input type="number" id="boxLength" min="1" max="200" value="30" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label for="boxWidth">
+                                    <i class="fas fa-ruler-vertical"></i> Width (cm)
+                                </label>
+                                <input type="number" id="boxWidth" min="1" max="200" value="20" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label for="boxHeight">
+                                    <i class="fas fa-arrows-alt-v"></i> Height (cm)
+                                </label>
+                                <input type="number" id="boxHeight" min="1" max="200" value="15" step="0.1">
+                            </div>
+                        </div>
+                        <div class="box-info">
+                            <div class="info-item">
+                                <span class="info-label">Volume:</span>
+                                <span class="info-value" id="boxVolume">9,000 cm³</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Surface Area:</span>
+                                <span class="info-value" id="boxSurfaceArea">2,700 cm²</span>
+                            </div>
+                        </div>
+                        <div class="simulator-actions">
+                            <button class="btn btn-primary" onclick="resetBoxDimensions()">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                            <button class="btn btn-secondary" onclick="requestQuoteFromSimulator()">
+                                <i class="fas fa-envelope"></i> Request Quote
+                            </button>
+                        </div>
+                        <div class="simulator-instructions">
+                            <h4><i class="fas fa-info-circle"></i> Instructions</h4>
+                            <ul>
+                                <li>Drag to rotate the box</li>
+                                <li>Scroll to zoom in/out</li>
+                                <li>Enter dimensions in centimeters</li>
+                                <li>Minimum: 1cm, Maximum: 200cm</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="simulator-viewer">
+                    <div id="box3DContainer" class="box-3d-container">
+                        <div class="loading-message" id="simulatorLoading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading 3D viewer...</p>
+                        </div>
+                    </div>
+                    <div class="viewer-controls">
+                        <button class="control-btn" onclick="resetCamera()" title="Reset View">
+                            <i class="fas fa-home"></i>
+                        </button>
+                        <button class="control-btn" onclick="toggleWireframe()" title="Toggle Wireframe">
+                            <i class="fas fa-cube"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ Section -->
     <section id="faq" class="faq">
         <div class="container">
@@ -1125,6 +1208,7 @@
                         <li><a href="#about">About</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#catalogue">Catalogue</a></li>
+                        <li><a href="#box-simulator">3D Simulator</a></li>
                         <li><a href="#faq">FAQ</a></li>
                         <li><a href="#reviews">Reviews</a></li>
                         <li><a href="#contact">Contact</a></li>
@@ -1223,6 +1307,7 @@
 
     <script src="firebase-config.js"></script>
     <script src="catalogue-loader.js"></script>
+    <script src="box-simulator.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
